@@ -7,18 +7,11 @@ data_split<-function(data){
   indexes<- sample(indexes)
   train_data<-data.frame()
   test_data<-data.frame()
+  
   for(i in seq_len(sample_size)){
     
     start<-((indexes[i]-1)*120)+1
     end<-(indexes[i])*120
-    print("i")
-    print(i)
-    print("indexes")
-    print(indexes[i])
-    print("start")
-    print(start)
-    print("end")
-    print(end)
     slice<-data[c(start:end),]
     train_data<-rbind(train_data,slice)
   }
@@ -26,20 +19,11 @@ data_split<-function(data){
     
     start<-((indexes[i]-1)*120)+1
     end<-(indexes[i])*120
-    print("i")
-    print(i)
-    print("indexes")
-    print(indexes[i])
-    print("start")
-    print(start)
-    print("end")
-    print(end)
     slice<-data[c(start:end),]
     test_data<-rbind(test_data,slice)
   }
-  print(nrow(train_data))
-  print(nrow(test_data))
+
   split<- list(train_data, test_data)
-  names(split)<-c("train","test")
+  names(split)<-c("train_data","test_data")
   return(split)
 }
