@@ -5,6 +5,8 @@ library(CORElearn)
 
 source("data_split.R")
 source("utils.R")
+source("new_c_data.R")
+source("cross_validation.R")
 
 
 #Caricamento Dati
@@ -21,7 +23,12 @@ my_c_data<-new_c_data(df_c)
 new_data<-cbind(df_x, my_c_data, df_y)
 
 #my_data contenente i dati splittati
-my_data<-data_split(new_data)
+data<-data_split(new_data)
+
+#crossvalidazione
+train <- scale(data$train, center = TRUE, scale = TRUE)
+v <- cross_validation(train)
+
 
 #scegliamo il classificatore in cross-validation
 #dati già normalizzati in ingresso

@@ -24,6 +24,6 @@ data_split<-function(data){
   }
 
   split<- list(train_data, test_data)
-  names(split)<-c("train_data","test_data")
+  names(split)<-c("train","test")
   return(split)
 }
