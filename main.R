@@ -26,8 +26,7 @@ new_data<-cbind(df_x, my_c_data, df_y)
 data<-data_split(new_data)
 
 #crossvalidazione
-train <- scale(data$train, center = TRUE, scale = TRUE)
-v <- cross_validation(train)
+v <- cross_validation(data$train)
 
 
 #scegliamo il classificatore in cross-validation
