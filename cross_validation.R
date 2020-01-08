@@ -44,12 +44,12 @@ cross_validation <- function(data) {
     train <- data[-test_rows, ]
     
     last_col <- ncol(train)
-    x <- train[, -last_col]
+    x <- train[, -c(1, last_col)]
     y <- train[, last_col]
     model <- LiblineaR(data = x, target = y, type = 7, cost = 0.01, bias = TRUE, verbose = FALSE)
     
     last_col <- ncol(test)
-    x <- test[, -last_col]
+    x <- test[, -c(1, last_col)]
     y <- test[, last_col]
     prediction <- predict(model, x, decisionValues = TRUE)
     #print("Prediction")

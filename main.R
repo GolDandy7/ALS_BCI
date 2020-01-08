@@ -23,7 +23,7 @@ df_x <- apply_labels(df_x)
 
 #trasformo le C in una matrice  di 0 e 1 perchè la numerazione mi crea ordinamento
 my_c_data<-new_c_data(df_c)
-new_data<-cbind(df_x, my_c_data, df_y)
+new_data<-cbind(df_c, df_x, my_c_data, df_y)
 #new_data<-cbind(df_x, df_y)
 
 #split dei dati in training e test: data$train e data$test 
