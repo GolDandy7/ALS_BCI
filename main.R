@@ -11,6 +11,7 @@ source("cross_validation.R")
 source("cross_CT_validation.R")
 source("choosing_cross_validation.R")
 source("test_accuracy.R")
+source("decision_function.R")
 
 #Caricamento Dati
 
