@@ -53,7 +53,7 @@ cross_validation <- function(data) {
     y <- test[, last_col]
     prediction <- predict(model, x, decisionValues = TRUE)
     #print("Prediction")
-    #print(prediction)
+    #print(as.array(prediction$decisionValues))
     confusion_matrix <- table(predicted = prediction$predictions, observation = y)
     print("Confusion Matrix:")
     print(confusion_matrix)
@@ -65,5 +65,5 @@ cross_validation <- function(data) {
   mean_results <- apply(results, 2, mean)
   print(mean_results)
   
-  return(mean_results)
+  return(model)
 }

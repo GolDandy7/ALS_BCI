@@ -37,7 +37,7 @@ scaled_data = normalize(data)
 #scegliamo il valore migliore di loss e c
 #outcome<- choosing_cross_validation(scaled_data$train)
 #rifacciamo cross_validation sul train
-v <- cross_validation(scaled_data$train)
+model <- cross_validation(scaled_data$train)
 
-accuracy <- test_accuracy(scaled_data$test)
+accuracy <- test_accuracy(model, scaled_data$test)
 accuracy

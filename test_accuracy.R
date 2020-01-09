@@ -1,11 +1,10 @@
-test_accuracy <-function(test){
+test_accuracy <-function(model, test){
   set.seed(123)
   
   last_col <- ncol(test)
   c<-test[,1]
   x <- test[, -c(1, last_col)]
   y <- test[, last_col]
-  model <- LiblineaR(data = x, target = y, type =7, cost = 0.01, bias = TRUE, verbose = FALSE)
   
   prediction <- predict(model, x, decisionValues = TRUE)
   
