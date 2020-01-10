@@ -1,5 +1,3 @@
-library("R.utils")
-
 
 
 confusion_summary <- function(cm) {
@@ -17,16 +15,49 @@ confusion_summary <- function(cm) {
 
 cross_validation <- function(data) {
   
-  set.seed(123)
-  
   k = 10
+  
+  results <- matrix(0, nrow = k, ncol = 3)
+  colnames(results) <- c("Avg_Accuracy", "Avg_TPR1", "Avg_TPR-1")
+  
+  folders_list <- kfold(data, k) 
+  train_list <- folders_list$train
+  test_list <- folders_list$test
+  
+  for (i in seq_len(k)) {
+    
+    train <- train_list[[i]]
+    test <- test_list[[i]]
+    
+    # training
+    last_col <- ncol(train)
+    x <- train[, -c(1, last_col)]
+    y <- train[, last_col]
+    model <- LiblineaR(data = x, target = y, type = 7, cost = 0.01, bias = TRUE, verbose = FALSE)
+    
+    #test
+    results[i, ] <- test_accuracy(model, test)
+  }
+  print(results)
+  
+  mean_results <- apply(results, 2, mean)
+  print(mean_results)
+  
+  return(model)
+}
+
+
+kfold <- function(data, k) {
+  
   nchar <- nrow(data) / 120
   char_indexes <- sample(c(1:nchar))
   dim_folder <- floor(nchar / k)
   
-  results <- matrix(0, nrow = k, ncol = 3)
-  colnames(results) <- c("Avg_Accuracy", "Avg_TPR1", "Avg_TPR-1")
-  run <- 1
+  result_list <- list()
+  train_list <- list()
+  test_list <- list()
+  run = 1
+  
   for (i in seq(1, nchar - (dim_folder + nchar %% k - 1), by = dim_folder)) {
     printf("run %d\n", run)
     test <- data.frame()
@@ -43,27 +74,12 @@ cross_validation <- function(data) {
     }
     train <- data[-test_rows, ]
     
-    last_col <- ncol(train)
-    x <- train[, -c(1, last_col)]
-    y <- train[, last_col]
-    model <- LiblineaR(data = x, target = y, type = 7, cost = 0.01, bias = TRUE, verbose = FALSE)
-    
-    last_col <- ncol(test)
-    x <- test[, -c(1, last_col)]
-    y <- test[, last_col]
-    prediction <- predict(model, x, decisionValues = TRUE)
-    #print("Prediction")
-    #print(as.array(prediction$decisionValues))
-    confusion_matrix <- table(predicted = prediction$predictions, observation = y)
-    print("Confusion Matrix:")
-    print(confusion_matrix)
-    results[run,] <- confusion_summary(confusion_matrix)
+    train_list[[run]] <- train
+    test_list[[run]] <- test
     run <- run + 1
   }
-  print(results)
-  
-  mean_results <- apply(results, 2, mean)
-  print(mean_results)
-  
-  return(model)
+  result_list[[1]] <- train_list
+  result_list[[2]] <- test_list
+  names(result_list) <- c("train", "test")
+  return(result_list)
 }

@@ -1,23 +1,14 @@
-test_accuracy <-function(model, test){
-  set.seed(123)
+test_accuracy <-function(model, test) {
   
   last_col <- ncol(test)
-  c<-test[,1]
+  c <- test[, 1]
   x <- test[, -c(1, last_col)]
   y <- test[, last_col]
   
-  prediction <- predict(model, x, decisionValues = TRUE)
+  prediction <- max_predict(model, x, c)
+  confusion_matrix <- table(predicted = prediction, observation = y)
+  print("Confusion Matrix:")
+  print(confusion_matrix)
   
-  new_y<-decision_function(prediction$decisionValues[,1],c)
-  print("lunghezza decision value")
-  print(length(prediction$decisionValues[,1]))
-  print("Dim New Y")
-  print(length(new_y))
-  print("Y trget")
-  print(length(y))
-  #confusion_matrix <- table(predicted = prediction$predictions, observation = y)
-  confusion_matrix <- table(predicted = new_y, observation = y)
-  #print("Confusion Matrix:")
-  #print(confusion_matrix)
-   results<- confusion_summary(confusion_matrix)
+  return(confusion_summary(confusion_matrix))
 }

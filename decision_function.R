@@ -1,11 +1,17 @@
+
+max_predict <- function(model, x, c) {
+  sign_prediction <- predict(model, x, decisionValues = TRUE)
+  decision_function(sign_prediction$decisionValues[, 1], c)
+}
+
+
+
 decision_function<-function(dvalues,c){
   
   #dvalues: colonna delle decision values
   #c colonna degli indici riga/colonna (df_c)
   
   num_row<-length(dvalues)
-  print("Nrow")
-  print(nrow)
   dim<-12
   iterations<-10
   slice_size<-dim*iterations
@@ -15,19 +21,18 @@ decision_function<-function(dvalues,c){
   
   y<-rep(-1,num_row)
   for(i in seq_len(characters)){
-      
+    printf("character %d\n", i)
     start<-((i-1)*slice_size)+1
     end<-i*slice_size
     slice<-cdvalues[c(start:end),]
-    print("Slice character")
-    print(slice)
+    #print(slice)
     rc<-max_values(slice,iterations)
     #indexes<-which(cdvalues[,1]==rc[1] | cdvalues[,1]==rc[2])
     indexes<-which(slice[,1]==rc[1] | slice[,1]==rc[2])
     
     y[(start-1)+indexes]<-1
-    print("Y da start a end")
-    print(y[start:end])
+    #print("Y per char")
+    #print(y[start:end])
   }
   return(y)
 }
@@ -48,7 +53,7 @@ max_values<-function(char_data,iterations){
     #print(results[i,])
   }
   mode<-apply(results,2,getmode)
-  print("mode")
+  print("mode:")
   print(mode)
   return(mode)
 }
@@ -79,8 +84,8 @@ max_rc<-function(iteration_data){
   return(max_v)
 }
 
+
 getmode <- function(v) {
   uniqv <- unique(v)
   uniqv[which.max(tabulate(match(v, uniqv)))]
 }
-
