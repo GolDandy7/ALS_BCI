@@ -3,6 +3,8 @@ library("LiblineaR")
 library("e1071")
 library(CORElearn)
 library("R.utils")
+library(DescTools)
+library(Bolstad2)
 
 source("data_split.R")
 source("utils.R")
