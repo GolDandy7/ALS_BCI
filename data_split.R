@@ -1,5 +1,4 @@
 data_split<-function(data){
-  set.seed(123)
 #splittare il dataframe separando le istanze target e non target
   indexes<-c(1:(nrow(data)/120))
   sample_size<-floor(0.70*length(indexes))
