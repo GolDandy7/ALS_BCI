@@ -1,5 +1,4 @@
 new_c_data<-function(c_data){
-  set.seed(123)
   
   num_row=nrow(c_data)
   num_col=12

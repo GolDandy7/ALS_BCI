@@ -16,6 +16,7 @@ source("choosing_cross_validation.R")
 source("test_accuracy.R")
 source("decision_function.R")
 source("feature_selection.R")
+source("data_augmentation.R")
 
 #Caricamento Dati
 
@@ -29,36 +30,40 @@ df_x <- apply_labels(df_x)
 #set del seme per la ripetibilità dell'esperimento
 set.seed(123)
 
+df_cxy <- cbind(df_c, df_x, df_y)
+
+#data augmentation
+df_cxy <- augment_data(df_cxy, 0.3)
+df_c <- as.data.frame(df_cxy[, 1])
+df_x <- as.data.frame(df_cxy[, -c(1, ncol(df_cxy))])
+df_y <- as.data.frame(df_cxy[, ncol(df_cxy)])
 
 #------------features---------------------
-features_area<-features_area_channel(df_x)
-features_area_positive <-features_positive_area_channel(df_x)
-features_area_negative <-features_negative_area_channel(df_x)
-features_rt<-features_rt_channel(df_x)
-features_cz<-features_crossing_zero(df_x)
+feature_c_bin<-new_c_data(df_c)
+feature_area<-features_area_channel(df_x)
+feature_area_positive <-features_positive_area_channel(df_x)
+feature_area_negative <-features_negative_area_channel(df_x)
+feature_rt<-features_rt_channel(df_x)
+feature_cz<-features_crossing_zero(df_x)
 feature_pp<-features_peak_to_peak(df_x)
 
 #se aggiungo feature_p peggioro in cross validation e rimango uguale sul test
 #-----------------------------------------
 #trasformo le C in una matrice  di 0 e 1 perchè la numerazione mi crea ordinamento
-my_c_data<-new_c_data(df_c)
-new_data<-cbind(df_c, df_x, my_c_data)
-new_data<-cbind(new_data,features_area)
-new_data<-cbind(new_data,features_rt)
-new_data<-cbind(new_data,features_cz)
-new_data<-cbind(new_data,features_area_negative)
-new_data<-cbind(new_data,features_area_positive)
-new_data<-cbind(new_data,feature_pp)
-new_data<-cbind(new_data,df_y)
-
-#new_data<-cbind(df_x, df_y)
-
+featured_data<-cbind(df_c, df_x, feature_c_bin)
+featured_data<-cbind(featured_data,feature_area)
+featured_data<-cbind(featured_data,feature_rt)
+featured_data<-cbind(featured_data,feature_cz)
+featured_data<-cbind(featured_data,feature_area_negative)
+featured_data<-cbind(featured_data,feature_area_positive)
+featured_data<-cbind(featured_data,feature_pp)
+featured_data<-cbind(featured_data,df_y)
 
 #split dei dati in training e test: data$train e data$test 
-data<-data_split(new_data)
+splitted_data <- data_split(featured_data)
 
 #normalizzazione
-scaled_data = normalize(data)
+scaled_data = normalize(splitted_data)
 
 #---------crossvalidazione-------------
 #scegliamo il valore migliore di loss e c
