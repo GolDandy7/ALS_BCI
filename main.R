@@ -6,6 +6,7 @@ library("R.utils")
 library(DescTools)
 library(Bolstad2)
 
+source("constants.R")
 source("data_split.R")
 source("utils.R")
 source("new_c_data.R")
@@ -18,46 +19,41 @@ source("decision_function.R")
 source("feature_selection.R")
 source("data_augmentation.R")
 
-#Caricamento Dati
 
-df_x <- read.table("X.txt",header = FALSE)
-df_c <- read.table("C.txt",header = FALSE)
-df_y <- read.table("Y.txt",header = FALSE)
+#Caricamento Dati
+dfx <- read.table("X.txt", header = FALSE)
+dfc <- read.table("C.txt", header = FALSE)
+dfy <- read.table("Y.txt", header = FALSE)
 
 #Applicazione delle etichette sulle colonne del df
-df_x <- apply_labels(df_x)
+dfx <- apply_labels(dfx)
+colnames(dfy) <- "label"
 
 #set del seme per la ripetibilità dell'esperimento
 set.seed(123)
 
-df_cxy <- cbind(df_c, df_x, df_y)
+dfxy <- cbind(dfx, dfy)
+dfcxy <- cbind(dfc, dfx, dfy)
+df_cxy <- dfcxy
 
 #data augmentation
-df_cxy <- augment_data(df_cxy, 0.3)
+#df_cxy <- rbind(dfcxy, generate_data(dfcxy, 0.3, put_noise))
+#df_cxy <- rbind(dfcxy, generate_data(dfcxy, 0.3, right_shift, shift_size = floor(SAMPLE_POINTS * 0.1)))
+
 df_c <- as.data.frame(df_cxy[, 1])
 df_x <- as.data.frame(df_cxy[, -c(1, ncol(df_cxy))])
 df_y <- as.data.frame(df_cxy[, ncol(df_cxy)])
 
 #------------features---------------------
-feature_c_bin<-new_c_data(df_c)
-feature_area<-features_area_channel(df_x)
-feature_area_positive <-features_positive_area_channel(df_x)
-feature_area_negative <-features_negative_area_channel(df_x)
-feature_rt<-features_rt_channel(df_x)
-feature_cz<-features_crossing_zero(df_x)
-feature_pp<-features_peak_to_peak(df_x)
-
+features_area<-features_area_channel(df_x)
+features_rt<-features_rt_channel(df_x)
 #se aggiungo feature_p peggioro in cross validation e rimango uguale sul test
 #-----------------------------------------
 #trasformo le C in una matrice  di 0 e 1 perchè la numerazione mi crea ordinamento
-featured_data<-cbind(df_c, df_x, feature_c_bin)
-featured_data<-cbind(featured_data,feature_area)
-featured_data<-cbind(featured_data,feature_rt)
-featured_data<-cbind(featured_data,feature_cz)
-featured_data<-cbind(featured_data,feature_area_negative)
-featured_data<-cbind(featured_data,feature_area_positive)
-featured_data<-cbind(featured_data,feature_pp)
-featured_data<-cbind(featured_data,df_y)
+c_bin <- new_c_data(df_c)
+featured_data <- cbind(df_c, df_x, c_bin, features_area, features_rt, df_y)
+#featured_data <- cbind(df_c, df_x, c_bin, df_y)
+
 
 #split dei dati in training e test: data$train e data$test 
 splitted_data <- data_split(featured_data)
