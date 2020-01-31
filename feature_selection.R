@@ -284,17 +284,17 @@ extract_P300 <- function(data) {
   for (i in channels - 1) {
     start <- (i * SAMPLE_POINTS) + 1
     end <- SAMPLE_POINTS * (i + 1)
-    target_data <- data[data$V1 == 1, c(start:end)]
-    nontarget_data <- data[data$V1 == -1, c(start:end)]
+    target_data <- data[data$label == 1, c(start:end)]
+    nontarget_data <- data[data$label == -1, c(start:end)]
     
     target_avg <- apply(target_data, 2, mean)
-    print(target_avg)
     nontarget_avg <- apply(nontarget_data, 2, mean)
     m <- rbind(m, target_avg)
   }
   
   average <- apply(m, 2, mean)
   matplot(x, average, type="l", col="red")
+  return(as.numeric(average))
 }
 
 # NOTA BENE: da usare sui soli dati di train
@@ -306,14 +306,16 @@ feature_corr_P300 <- function(df){
   matrix_corr <- matrix(nrow = num_rows,ncol = num_channel)
   channel_label<-c("Fz_Corr", "Cz_Corr", "Pz_Corr", "Oz_Corr", "P3_Corr", "P4_Corr", "PO7_Corr", "PO8_Corr")
   #funzione di simone per ottenere la p300 media -> variabile di nome p300.
-  p300 <- extract_P300(dfxy) #da sostituire con la funzione
+  p300 <- extract_P300(df) #da sostituire con la funzione
   for(i in seq_len(num_rows)){
     for(j in seq_len(num_channel)){
       start<-((j-1)*size)+1
       end<-j*size
-      matrix_corr[i,j] <- cor(p300,df[i,c(start:end)])
+      channel_row <- as.numeric(df[i,c(start:end)]) 
+      matrix_corr[i,j] <- cor(p300,channel_row)
     }
   }
+  return(as.data.frame(matrix_corr))
 }
 
 

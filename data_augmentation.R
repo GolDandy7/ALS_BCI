@@ -1,17 +1,15 @@
-augment_data <- function(data, portion) {
+generate_data <- function(data, portion, func, ...) {
   
-  char_rows = 120
-  num_channels = 8
-  sample_size <- floor(portion * nrow(data) / char_rows)
+  sample_size <- floor(portion * nrow(data) / CHAR_ROWS)
   char_indexes <- sample(c(1:sample_size))
   
   new_data <- data.frame()
   
-  extraction_indexes <- vector(length = sample_size * char_rows)
+  extraction_indexes <- vector(length = sample_size * CHAR_ROWS)
   
   for (i in seq_len(sample_size)) {
-    start <- ((char_indexes[i] - 1) * char_rows) + 1
-    end <- (char_indexes[i]) * char_rows
+    start <- ((char_indexes[i] - 1) * CHAR_ROWS) + 1
+    end <- (char_indexes[i]) * CHAR_ROWS
     extraction_indexes <- c(extraction_indexes, c(start:end))
   }
   
@@ -22,16 +20,38 @@ augment_data <- function(data, portion) {
   x <- new_data[, -c(1, num_col)]
   y <- new_data[, num_col]
   # somma white noise alle righe di
-  x_wn <- as.data.frame(t(apply(x, 1, add_wn)))
-  new_data <- cbind(c, x_wn, y)
+  x <- func(x, ...)
+  #x <- as.data.frame(t(apply(x, 1, add_wn)))
+  new_data <- cbind(c, x, y)
   names(new_data) <- names(data)
-  data <- rbind(data, new_data)
+  return(new_data)
 }
 
 
+
+
+put_noise <- function(data) {
+  print("put_noise function")
+  as.data.frame(t(apply(data, 1, function(row) {
+    wn <- as.vector(arima.sim(list(order=c(0,0,0)), n=length(row)))
+    row + wn
+  })))
+}
+
 add_wn <- function(row) {
-  
   # generazione di un white noise di lunghezza pari a 204
-  wn <- arima.sim(list(order=c(0,0,0)), n=204)
-  return(row + as.vector(wn))
+  wn <- as.vector(arima.sim(list(order=c(0,0,0)), n=length(row)))
+  return(row + wn)
+}
+
+
+# Sfasamento del segnale: shift a destra di "shift_size" posizioni dei valori 
+# della righe del dataframe e rimpiazza i primi "shift_size" elementi con i valori medi 
+right_shift <- function(data, shift_size) {
+  #print("right shift function")
+  #printf("shift_size = %d\n", shift_size)
+  replace_data <- apply(data[, 1:shift_size], 2, mean)
+  as.data.frame(t(apply(data, 1, function(row, replace_data) {
+    c(replace_data, row[1:(length(row) - shift_size)])
+  }, replace_data)))
 }
