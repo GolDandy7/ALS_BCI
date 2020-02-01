@@ -52,7 +52,7 @@ max_values<-function(char_data,iterations){
     #print("Result i")
     #print(results[i,])
   }
-  mode<-apply(results,2,getmode)
+  mode<-apply(results,2,weighted_mode)
   print("mode:")
   print(mode)
   return(mode)
@@ -88,4 +88,19 @@ max_rc<-function(iteration_data){
 getmode <- function(v) {
   uniqv <- unique(v)
   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+# calcola la moda pesata con pesi decrescenti
+weighted_mode <- function(v) {
+  uniqv <- unique(v)
+  n <- length(v)
+  l <- length(uniqv)
+  w <- vector(length = l)
+  for (i in seq_len(l)) {
+    match_indexes <- which(v == uniqv[i])
+    for (j in match_indexes) {
+      w[i] = w[i] + (1 + 1 / (n - j + 1))
+    }
+  }
+  uniqv[which.max(w)]
 }
