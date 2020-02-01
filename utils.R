@@ -1,20 +1,35 @@
-
-
 apply_labels <- function(df) {
   
-  electrodes = c("Fz", "Cz", "Pz", "Oz", "P3", "P4", "PO7", "PO8")
-  nsamples = 204
   ncol = ncol(df)
   labels = vector(length = ncol)
   
   # generate labels
-  for (i in seq_len(length(electrodes))) {
-    for (j in seq_len(nsamples)) {
-      labels[(i - 1) * nsamples + j] <- paste(electrodes[i], j, sep = "_")
+  for (i in seq_len(NUM_CHANNELS)) {
+    for (j in seq_len(SAMPLE_POINTS)) {
+      labels[(i - 1) * SAMPLE_POINTS + j] <- paste(CHANNELS[i], j, sep = "_")
     }
   }
   
   # apply labels and return dataframe
   names(df) <- labels
   return(df)
+}
+
+
+get_xdf <- function(data) {
+  last_col <- ncol(data)
+  return(as.data.frame(data[-c(1, last_col)]))
+}
+
+get_ydf <- function(data) {
+  last_col <- ncol(data)
+  return(as.data.frame(data[last_col]))
+}
+
+get_cdf <- function(data) {
+  return(as.data.frame(data[1]))
+}
+
+get_xydf <- function(data) {
+  return(as.data.frame(data[-1]))
 }
