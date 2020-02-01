@@ -1,12 +1,13 @@
 
-normalize <- function(data) {
+normalize <- function(training_data, test_data) {
   #separazione istanze dall'etichetta della classe
-  c_train <- data$train[ , 1]
-  data_train <- data$train[ , 2:(ncol(data$train) - 1)]
-  label_train <- data$train[ , ncol(data$train)]
-  c_test <- data$test[ , 1]
-  data_test <- data$test[ , 2:(ncol(data$test) - 1)]
-  label_test <- data$test[ , ncol(data$test)]
+  num_col <- ncol(training_data)
+  c_train <- training_data[ , 1]
+  data_train <- training_data[ , 2:(num_col - 1)]
+  label_train <- training_data[ , num_col]
+  c_test <- test_data[ , 1]
+  data_test <- test_data[ , 2:(num_col - 1)]
+  label_test <- test_data[ , num_col]
   
   scaled_training <- scale(data_train, center = T, scale = T)
   #il test viene scalato usando media e dev std dei dati di training (perché stesso campione)

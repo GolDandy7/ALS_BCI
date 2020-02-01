@@ -20,6 +20,7 @@ source("feature_selection.R")
 source("data_augmentation.R")
 source("data_understanding.R")
 
+
 #Caricamento Dati
 dfx <- read.table("X.txt", header = FALSE)
 dfc <- read.table("C.txt", header = FALSE)
@@ -30,51 +31,33 @@ dfx <- apply_labels(dfx)
 colnames(dfy) <- "label"
 
 #set del seme per la ripetibilità dell'esperimento
-set.seed(123)
+set.seed(456)
 
 dfxy <- cbind(dfx, dfy)
 dfcxy <- cbind(dfc, dfx, dfy)
-df_cxy <- dfcxy
+
+
+#split dei dati in training e test: $train e $test 
+splitted_data <- data_split(dfcxy)
+
+training_set <- splitted_data$train
+test_set <- splitted_data$test
+
 
 #data augmentation
 #df_cxy <- rbind(dfcxy, generate_data(dfcxy, 0.3, put_noise))
 #df_cxy <- rbind(dfcxy, generate_data(dfcxy, 0.3, right_shift, shift_size = floor(SAMPLE_POINTS * 0.1)))
 
-df_c <- as.data.frame(df_cxy[, 1])
-df_x <- as.data.frame(df_cxy[, -c(1, ncol(df_cxy))])
-df_y <- as.data.frame(df_cxy[, ncol(df_cxy)])
 
+#feature selection
+p300 <- extract_P300(get_xydf(training_set))
+featured_train <- feature_selection(training_set, p300)
+featured_test <- feature_selection(test_set, p300)
 
-#------------features---------------------
-feature_c_bin<-new_c_data(df_c)
-feature_P300 <- feature_corr_P300(dfxy)
-feature_area<-features_area_channel(df_x)
-feature_area_positive <-features_positive_area_channel(df_x)
-feature_area_negative <-features_negative_area_channel(df_x)
-feature_rt<-features_rt_channel(df_x)
-feature_cz<-features_crossing_zero(df_x)
-feature_pp<-features_peak_to_peak(df_x)
-feature_powsign <- features_signal_power(df_x)
-
-#-----------------------------------------
-#trasformo le C in una matrice  di 0 e 1 perchè la numerazione mi crea ordinamento
-featured_data<-cbind(df_c, df_x, feature_c_bin)
-featured_data<-cbind(featured_data,feature_area)
-featured_data<-cbind(featured_data,feature_rt)
-featured_data<-cbind(featured_data,feature_P300)
-featured_data<-cbind(featured_data,feature_powsign)
-featured_data<-cbind(featured_data,feature_cz)
-featured_data<-cbind(featured_data,feature_area_negative)
-featured_data<-cbind(featured_data,feature_area_positive)
-featured_data<-cbind(featured_data,feature_pp)
-featured_data<-cbind(featured_data,df_y)
-
-
-#split dei dati in training e test: data$train e data$test 
-splitted_data <- data_split(featured_data)
 
 #normalizzazione
-scaled_data = normalize(splitted_data)
+scaled_data = normalize(featured_train, featured_test)
+
 
 #---------crossvalidazione-------------
 #scegliamo il valore migliore di loss e c
@@ -82,5 +65,7 @@ scaled_data = normalize(splitted_data)
 #rifacciamo cross_validation sul train
 model <- cross_validation(scaled_data$train)
 
+
+#test
 accuracy <- test_accuracy(model, scaled_data$test)
 accuracy

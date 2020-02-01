@@ -1,3 +1,40 @@
+source("utils.R")
+
+feature_selection <- function(data, p300) {
+  
+  df_c <- get_cdf(data)
+  df_x <- get_xdf(data)
+  df_y <- get_ydf(data)
+  
+  #------------features---------------------
+  feature_c_bin <- new_c_data(df_c)
+  #feature_P300 <- feature_corr_P300(cbind(df_x, df_y), p300)
+  feature_area <- features_area_channel(df_x)
+  #feature_rt <- features_rt_channel(df_x)
+  #feature_area_positive <- features_positive_area_channel(df_x)
+  #feature_area_negative <- features_negative_area_channel(df_x)
+  #feature_cz <- features_crossing_zero(df_x)
+  #feature_pp <- features_peak_to_peak(df_x)
+  #feature_powsign <- features_signal_power(df_x)
+  
+  #-----------------------------------------
+  #trasformo le C in una matrice  di 0 e 1 perchè la numerazione mi crea ordinamento
+  featured_data<-cbind(df_c, df_x,feature_c_bin)
+  #featured_data<-cbind(featured_data,feature_P300)
+  featured_data<-cbind(featured_data,feature_area)
+  #featured_data<-cbind(featured_data,feature_rt)
+  #featured_data<-cbind(featured_data,feature_powsign)
+  #featured_data<-cbind(featured_data,feature_cz)
+  #featured_data<-cbind(featured_data,feature_area_negative)
+  #featured_data<-cbind(featured_data,feature_area_positive)
+  #featured_data<-cbind(featured_data,feature_pp)
+  
+  #rebind delle y 
+  featured_data<-cbind(featured_data,df_y)
+}
+
+
+
 #misura il tempo in cui il segnale è crescente
 rising_time <- function(values) {
   
@@ -298,7 +335,7 @@ extract_P300 <- function(data) {
 }
 
 # NOTA BENE: da usare sui soli dati di train
-feature_corr_P300 <- function(df){
+feature_corr_P300 <- function(df, p300){
   
   num_channel <- 8
   num_rows <- nrow(df)
@@ -306,7 +343,6 @@ feature_corr_P300 <- function(df){
   matrix_corr <- matrix(nrow = num_rows,ncol = num_channel)
   channel_label<-c("Fz_Corr", "Cz_Corr", "Pz_Corr", "Oz_Corr", "P3_Corr", "P4_Corr", "PO7_Corr", "PO8_Corr")
   #funzione di simone per ottenere la p300 media -> variabile di nome p300.
-  p300 <- extract_P300(df) #da sostituire con la funzione
   for(i in seq_len(num_rows)){
     for(j in seq_len(num_channel)){
       start<-((j-1)*size)+1
@@ -317,10 +353,3 @@ feature_corr_P300 <- function(df){
   }
   return(as.data.frame(matrix_corr))
 }
-
-
-
-
-
-
-
