@@ -8,25 +8,25 @@ feature_selection <- function(data, p300) {
   
   #------------features---------------------
   feature_c_bin <- new_c_data(df_c)
-  #feature_P300 <- feature_corr_P300(cbind(df_x, df_y), p300)
+  feature_P300 <- feature_corr_P300(cbind(df_x, df_y), p300)
   feature_area <- features_area_channel(df_x)
-  #feature_rt <- features_rt_channel(df_x)
-  #feature_area_positive <- features_positive_area_channel(df_x)
   #feature_area_negative <- features_negative_area_channel(df_x)
+  #feature_area_positive <- features_positive_area_channel(df_x)
+  #feature_rt <- features_rt_channel(df_x)
+  #feature_powsign <- features_signal_power(df_x)
   #feature_cz <- features_crossing_zero(df_x)
   #feature_pp <- features_peak_to_peak(df_x)
-  #feature_powsign <- features_signal_power(df_x)
   
   #-----------------------------------------
   #trasformo le C in una matrice  di 0 e 1 perchè la numerazione mi crea ordinamento
   featured_data<-cbind(df_c, df_x,feature_c_bin)
-  #featured_data<-cbind(featured_data,feature_P300)
+  featured_data<-cbind(featured_data,feature_P300)
   featured_data<-cbind(featured_data,feature_area)
+  #featured_data<-cbind(featured_data,feature_area_negative)
+  #featured_data<-cbind(featured_data,feature_area_positive)
   #featured_data<-cbind(featured_data,feature_rt)
   #featured_data<-cbind(featured_data,feature_powsign)
   #featured_data<-cbind(featured_data,feature_cz)
-  #featured_data<-cbind(featured_data,feature_area_negative)
-  #featured_data<-cbind(featured_data,feature_area_positive)
   #featured_data<-cbind(featured_data,feature_pp)
   
   #rebind delle y 
@@ -117,12 +117,11 @@ compute_positive_area <-function(channel_data){
 features_positive<-function(df_x){
   
   channel_label<-c("Fz_+", "Cz_+", "Pz_+", "Oz_+", "P3_+", "P4_+", "PO7_+", "PO8_+")
-  num_channel<-8
-  size<-ncol(df_x)/num_channel
-  features_positives<-(matrix(ncol = num_channel,nrow = nrow(df_x)))
+  size<-ncol(df_x)/NUM_CHANNELS
+  features_positives<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
   
   
-  for(i in seq_len(num_channel)){
+  for(i in seq_len(NUM_CHANNELS)){
     printf("Iterazione: %d\n",i)
     start<-((i-1)*size)+1
     end<-i*size
@@ -139,12 +138,11 @@ features_positive<-function(df_x){
 features_rt_channel<-function(df_x){
   
   channel_rt_names<-c("Fz_RT", "Cz_RT", "Pz_RT", "Oz_RT", "P3_RT", "P4_RT", "PO7_RT", "PO8_RT")
-  num_channel<-8
-  size<-ncol(df_x)/num_channel
-  features_rt<-(matrix(ncol = num_channel,nrow = nrow(df_x)))
+  size<-ncol(df_x)/NUM_CHANNELS
+  features_rt<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
   
   
-  for(i in seq_len(num_channel)){
+  for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
     start<-((i-1)*size)+1
     end<-i*size
@@ -161,12 +159,11 @@ features_rt_channel<-function(df_x){
 features_area_channel<-function(df_x){
   
   channel_label<-c("Fz_Area", "Cz_Area", "Pz_Area", "Oz_Area", "P3_Area", "P4_Area", "PO7_Area", "PO8_Area")
-  num_channel<-8
-  size<-ncol(df_x)/num_channel
-  features_area<-(matrix(ncol = num_channel,nrow = nrow(df_x)))
+  size<-ncol(df_x)/NUM_CHANNELS
+  features_area<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
   
   
-  for(i in seq_len(num_channel)){
+  for(i in seq_len(NUM_CHANNELS)){
    #printf("Iterazione: %d\n",i)
    start<-((i-1)*size)+1
    end<-i*size
@@ -183,12 +180,11 @@ features_area_channel<-function(df_x){
 features_positive_area_channel<-function(df_x){
   
   channel_label<-c("Fz_Area+", "Cz_Area+", "Pz_Area+", "Oz_Area+", "P3_Area+", "P4_Area+", "PO7_Area+", "PO8_Area+")
-  num_channel<-8
-  size<-ncol(df_x)/num_channel
-  features_area<-(matrix(ncol = num_channel,nrow = nrow(df_x)))
+  size<-ncol(df_x)/NUM_CHANNELS
+  features_area<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
   
   
-  for(i in seq_len(num_channel)){
+  for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
     start<-((i-1)*size)+1
     end<-i*size
@@ -205,12 +201,11 @@ features_positive_area_channel<-function(df_x){
 features_negative_area_channel<-function(df_x){
   
   channel_label<-c("Fz_Area+", "Cz_Area-", "Pz_Area-", "Oz_Area-", "P3_Area-", "P4_Area-", "PO7_Area-", "PO8_Area-")
-  num_channel<-8
-  size<-ncol(df_x)/num_channel
-  features_area<-(matrix(ncol = num_channel,nrow = nrow(df_x)))
+  size<-ncol(df_x)/NUM_CHANNELS
+  features_area<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
   
   
-  for(i in seq_len(num_channel)){
+  for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
     start<-((i-1)*size)+1
     end<-i*size
@@ -227,12 +222,11 @@ features_negative_area_channel<-function(df_x){
 features_peak<-function(df_x){
   
   channel_label<-c("Fz_peak", "Cz_peak", "Pz_peak", "Oz_peak", "P3_peak", "P4_peak", "PO7_peak", "PO8_peak")
-  num_channel<-8
-  size<-ncol(df_x)/num_channel
-  features_peak_values<-(matrix(ncol = num_channel,nrow = nrow(df_x)))
+  size<-ncol(df_x)/NUM_CHANNELS
+  features_peak_values<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
   
   
-  for(i in seq_len(num_channel)){
+  for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
     start<-((i-1)*size)+1
     end<-i*size
@@ -249,12 +243,11 @@ features_peak<-function(df_x){
 features_peak_to_peak<-function(df_x){
   
   channel_label<-c("Fz_PPeak", "Cz_PPeak", "Pz_PPeak", "Oz_PPeak", "P3_PPeak", "P4_PPeak", "PO7_PPeak", "PO8_PPeak")
-  num_channel<-8
-  size<-ncol(df_x)/num_channel
-  features_Ppeak_values<-(matrix(ncol = num_channel,nrow = nrow(df_x)))
+  size<-ncol(df_x)/NUM_CHANNELS
+  features_Ppeak_values<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
   
   
-  for(i in seq_len(num_channel)){
+  for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
     start<-((i-1)*size)+1
     end<-i*size
@@ -272,12 +265,11 @@ features_peak_to_peak<-function(df_x){
 features_crossing_zero<-function(df_x){
   
   channel_label<-c("Fz_Cross0", "Cz_Cross0", "Pz_Cross0", "Oz_Cross0", "P3_Cross0", "P4_Cross0", "PO7_Cross0", "PO8_Cross0")
-  num_channel<-8
-  size<-ncol(df_x)/num_channel
-  features_czero_values<-(matrix(ncol = num_channel,nrow = nrow(df_x)))
+  size<-ncol(df_x)/NUM_CHANNELS
+  features_czero_values<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
   
   
-  for(i in seq_len(num_channel)){
+  for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
     start<-((i-1)*size)+1
     end<-i*size
@@ -294,12 +286,11 @@ features_crossing_zero<-function(df_x){
 features_signal_power<-function(df_x){
   
   channel_label<-c("Fz_Pow", "Cz_Pow", "Pz_Pow", "Oz_Pow", "P3_Pow", "P4_Pow", "PO7_Pow", "PO8_Pow")
-  num_channel<-8
-  size<-ncol(df_x)/num_channel
-  features_power<-(matrix(ncol = num_channel,nrow = nrow(df_x)))
+  size<-ncol(df_x)/NUM_CHANNELS
+  features_power<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
   
   
-  for(i in seq_len(num_channel)){
+  for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
     start<-((i-1)*size)+1
     end<-i*size
@@ -337,14 +328,13 @@ extract_P300 <- function(data) {
 # NOTA BENE: da usare sui soli dati di train
 feature_corr_P300 <- function(df, p300){
   
-  num_channel <- 8
   num_rows <- nrow(df)
-  size<-ncol(df_x)/num_channel
-  matrix_corr <- matrix(nrow = num_rows,ncol = num_channel)
+  size<-ncol(df)/NUM_CHANNELS
+  matrix_corr <- matrix(nrow = num_rows,ncol = NUM_CHANNELS)
   channel_label<-c("Fz_Corr", "Cz_Corr", "Pz_Corr", "Oz_Corr", "P3_Corr", "P4_Corr", "PO7_Corr", "PO8_Corr")
   #funzione di simone per ottenere la p300 media -> variabile di nome p300.
   for(i in seq_len(num_rows)){
-    for(j in seq_len(num_channel)){
+    for(j in seq_len(NUM_CHANNELS)){
       start<-((j-1)*size)+1
       end<-j*size
       channel_row <- as.numeric(df[i,c(start:end)]) 

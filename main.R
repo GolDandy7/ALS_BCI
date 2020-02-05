@@ -22,19 +22,29 @@ source("data_understanding.R")
 
 
 #Caricamento Dati
-dfx <- read.table("X.txt", header = FALSE)
-dfc <- read.table("C.txt", header = FALSE)
-dfy <- read.table("Y.txt", header = FALSE)
+dfx_training <- read.table("X.txt", header = FALSE)
+dfc_training <- read.table("C.txt", header = FALSE)
+dfy_training <- read.table("Y.txt", header = FALSE)
+#dfx_test <- read.table("X_test.txt", header = FALSE)
+#dfc_test <- read.table("C_test.txt", header = FALSE)
+#dfy_test <- read.table("Y_test.txt", header = FALSE)
 
 #Applicazione delle etichette sulle colonne del df
-dfx <- apply_labels(dfx)
-colnames(dfy) <- "label"
+dfx_training <- apply_labels(dfx_training)
+colnames(dfy_training) <- "label"
 
 #set del seme per la ripetibilità dell'esperimento
-set.seed(456)
+set.seed(123)
 
-dfxy <- cbind(dfx, dfy)
-dfcxy <- cbind(dfc, dfx, dfy)
+#eliminazione canali
+#fourth_ccol <- c(((4-1) * SAMPLE_POINTS + 1):(4 * SAMPLE_POINTS))
+#seventh_ccol <- c(((7-1) * sample_pointS + 1):(7 * SAMPLE_POINTS))
+#dfx <- dfx_training[, -c(fourth_ccol, seventh_ccol)]
+
+# bind delle istanze con le corrispondenti etichette
+dfxy <- cbind(dfx_training, dfy_training)
+dfcxy <- cbind(dfc_training, dfx_training, dfy_training)
+
 
 
 #split dei dati in training e test: $train e $test 

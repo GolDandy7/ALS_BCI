@@ -20,6 +20,7 @@ cross_validation <- function(data) {
   results <- matrix(0, nrow = k, ncol = 3)
   colnames(results) <- c("Avg_Accuracy", "Avg_TPR1", "Avg_TPR-1")
   
+  # genera k coppie training-set / validation-set
   folders_list <- kfold(data, k) 
   train_list <- folders_list$train
   test_list <- folders_list$test
@@ -43,15 +44,23 @@ cross_validation <- function(data) {
   mean_results <- apply(results, 2, mean)
   print(mean_results)
   
+  model <- LiblineaR(data = data[, -c(1, last_col)], target = data[, last_col], type = 7, cost = 0.01, bias = TRUE, verbose = FALSE)
   return(model)
 }
 
 
+# Genera una lista contenente k coppie training set - validation set 
+# selezionati con il metodo k-fold a partire dal training-set data
 kfold <- function(data, k) {
   
-  nchar <- nrow(data) / 120
+  nchar <- nrow(data) / CHAR_ROWS
   char_indexes <- sample(c(1:nchar))
   dim_folder <- floor(nchar / k)
+  
+  print("-----------K-FOLD-----------")
+  print("Character indexes:")
+  print(char_indexes)
+  printf("Folder Dimension: %d\n", dim_folder)
   
   result_list <- list()
   train_list <- list()
@@ -66,8 +75,8 @@ kfold <- function(data, k) {
     for (j in 0:(dim_folder - 1)) {
       char <- char_indexes[i + j]
       printf("%d\n", char)
-      start <- ((char - 1) * 120) + 1
-      end <- char * 120
+      start <- ((char - 1) * CHAR_ROWS) + 1
+      end <- char * CHAR_ROWS
       slice <- data[c(start:end), ]
       test <- rbind(test, slice)
       test_rows <- c(test_rows, c(start:end))

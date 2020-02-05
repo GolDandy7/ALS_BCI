@@ -1,4 +1,4 @@
-
+# funzione di predizione basata sul massimo 
 max_predict <- function(model, x, c) {
   sign_prediction <- predict(model, x, decisionValues = TRUE)
   decision_function(sign_prediction$decisionValues[, 1], c)
@@ -96,10 +96,12 @@ weighted_mode <- function(v) {
   n <- length(v)
   l <- length(uniqv)
   w <- vector(length = l)
+  m <- mean(c(1:l))
   for (i in seq_len(l)) {
     match_indexes <- which(v == uniqv[i])
     for (j in match_indexes) {
-      w[i] = w[i] + (1 + 1 / (n - j + 1))
+      w[i] = w[i] + (1 + 2 / (n - j + 1))
+      #w[i] = w[i] + (2 - abs(j - m) / m)
     }
   }
   uniqv[which.max(w)]
