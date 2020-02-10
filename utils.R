@@ -18,18 +18,18 @@ apply_labels <- function(df) {
 
 get_xdf <- function(data) {
   last_col <- ncol(data)
-  return(as.data.frame(data[-c(1, last_col)]))
+  return(as.data.frame(data[, -c(1, last_col)]))
 }
 
 get_ydf <- function(data) {
   last_col <- ncol(data)
-  return(as.data.frame(data[last_col]))
+  return(as.data.frame(data[, last_col]))
 }
 
 get_cdf <- function(data) {
-  return(as.data.frame(data[1]))
+  return(as.data.frame(data[, 1]))
 }
 
 get_xydf <- function(data) {
-  return(as.data.frame(data[-1]))
+  return(as.data.frame(data[, -1]))
 }

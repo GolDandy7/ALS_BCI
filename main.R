@@ -31,6 +31,7 @@ dfy_training <- read.table("Y.txt", header = FALSE)
 
 #Applicazione delle etichette sulle colonne del df
 dfx_training <- apply_labels(dfx_training)
+colnames(dfc_training) <- "c"
 colnames(dfy_training) <- "label"
 
 #set del seme per la ripetibilità dell'esperimento
@@ -57,11 +58,13 @@ test_set <- splitted_data$test
 #data augmentation
 #df_cxy <- rbind(dfcxy, generate_data(dfcxy, 0.3, put_noise))
 #df_cxy <- rbind(dfcxy, generate_data(dfcxy, 0.3, right_shift, shift_size = floor(SAMPLE_POINTS * 0.1)))
+augmented_train <- rbind(training_set, generate_data(training_set, 0.3, meanchar_gen, n=2))
+#augmented_train <- training_set
 
 
 #feature selection
-p300 <- extract_P300(get_xydf(training_set))
-featured_train <- feature_selection(training_set, p300)
+p300 <- extract_P300(get_xydf(augmented_train))
+featured_train <- feature_selection(augmented_train, p300)
 featured_test <- feature_selection(test_set, p300)
 
 
