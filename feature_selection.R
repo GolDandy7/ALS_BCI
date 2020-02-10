@@ -16,7 +16,7 @@ feature_selection <- function(data, p300) {
   #feature_powsign <- features_signal_power(df_x)
   #feature_cz <- features_crossing_zero(df_x)
   #feature_pp <- features_peak_to_peak(df_x)
-  
+  #feature_tw <- features_time_windowPP(df_x)
   #-----------------------------------------
   #trasformo le C in una matrice  di 0 e 1 perchè la numerazione mi crea ordinamento
   featured_data<-cbind(df_c, df_x,feature_c_bin)
@@ -28,7 +28,7 @@ feature_selection <- function(data, p300) {
   #featured_data<-cbind(featured_data,feature_powsign)
   #featured_data<-cbind(featured_data,feature_cz)
   #featured_data<-cbind(featured_data,feature_pp)
-  
+  #featured_data <- cbind(featured_data,feature_tw)
   #rebind delle y 
   featured_data<-cbind(featured_data,df_y)
 }
@@ -261,6 +261,49 @@ features_peak_to_peak<-function(df_x){
   return(features_Ppeak_values)
 }
 
+#calcola il valore di picco del segnale x canale
+features_peak<-function(df_x){
+  
+  channel_label<-c("Fz_peak", "Cz_peak", "Pz_peak", "Oz_peak", "P3_peak", "P4_peak", "PO7_peak", "PO8_peak")
+  size<-ncol(df_x)/NUM_CHANNELS
+  features_peak_values<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
+  
+  
+  for(i in seq_len(NUM_CHANNELS)){
+    #printf("Iterazione: %d\n",i)
+    start<-((i-1)*size)+1
+    end<-i*size
+    channel<-df_x[,c(start:end)]
+    feature<-apply(channel, 1,max)
+    features_peak_values[,i]<-feature
+  }
+  colnames(features_peak_values)<-channel_label
+  features_peak_values <-as.data.frame(features_peak_values)
+  return(features_peak_values)
+}
+
+#calcola la lunghezza della finestra temporale di picco picco del segnale x canale
+features_time_windowPP<-function(df_x){
+  
+  channel_label<-c("Fz_PPeak", "Cz_TW", "Pz_TW", "Oz_TW", "P3_TW", "P4_TW", "PO7_TW", "PO8_TW")
+  size<-ncol(df_x)/NUM_CHANNELS
+  features_time_window<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
+  
+  
+  for(i in seq_len(NUM_CHANNELS)){
+    #printf("Iterazione: %d\n",i)
+    start<-((i-1)*size)+1
+    end<-i*size
+    channel<-df_x[,c(start:end)]
+    max_time<- apply(channel, 1,which.max)
+    min_time<- apply(channel,1,which.min)
+    features_time_window[,i]<-(abs(max_time-min_time))
+  }
+  colnames(features_time_window)<-channel_label
+  features_time_window <-as.data.frame(features_time_window)
+  return(features_time_window)
+}
+
 #calcola quante volte il segnale passa per zero
 features_crossing_zero<-function(df_x){
   
@@ -342,4 +385,59 @@ feature_corr_P300 <- function(df, p300){
     }
   }
   return(as.data.frame(matrix_corr))
+}
+
+feature_smooth <- function(df_x){
+  
+  rows <- nrow(df_x)
+  matrix_smooth <-matrix(nrow = rows,ncol=ncol(df_x))
+  
+  for(i in seq_len(rows)){
+    for(j in seq_len(NUM_CHANNELS)){
+      start<-((j-1)*SAMPLE_POINTS)+1
+      end<-j*SAMPLE_POINTS
+      row_channel<-df_x[i,c(start:end)]
+      matrix_smooth[i,c(start:end)] <- smooth(as.numeric(row_channel))
+    }
+  }
+  return(as.data.frame(matrix_smooth))
+}
+extract_Noise <- function(data) {
+  
+  channels <- c(1:NUM_CHANNELS)
+  x <- seq(1:SAMPLE_POINTS)
+  m <- data.frame()
+  n <- data.frame()
+  for (i in channels - 1) {
+    start <- (i * SAMPLE_POINTS) + 1
+    end <- SAMPLE_POINTS * (i + 1)
+    target_data <- data[data$label == 1, c(start:end)]
+    nontarget_data <- data[data$label == -1, c(start:end)]
+    
+    target_avg <- apply(target_data, 2, mean)
+    nontarget_avg <- apply(nontarget_data, 2, mean)
+    m <- rbind(m, target_avg)
+    n <- rbind(n,nontarget_avg)
+  }
+  
+  target <- apply(m, 2, mean)
+  notarget <- apply(n, 2, mean)
+  #matplot(x, average, type="l", col="red")
+  return(as.numeric(target-notarget))
+}
+
+feature_delete_noise <-function(df_x,noise){
+  
+  rows <- nrow(df_x)
+  matrix_df <-matrix(nrow = rows,ncol=ncol(df_x))
+  
+  for(i in seq_len(rows)){
+    for(j in seq_len(NUM_CHANNELS)){
+      start<-((j-1)*SAMPLE_POINTS)+1
+      end<-j*SAMPLE_POINTS
+      row_channel<-df_x[i,c(start:end)]
+      matrix_delete_noise[i,c(start:end)] <-row_channel-noise
+    }
+  }
+  return(as.data.frame(matrix_delete_noise))
 }

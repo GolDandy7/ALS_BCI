@@ -30,6 +30,7 @@ dfy_training <- read.table("Y.txt", header = FALSE)
 #dfy_test <- read.table("Y_test.txt", header = FALSE)
 
 #Applicazione delle etichette sulle colonne del df
+#dfx_training <- feature_smooth(dfx_training)
 dfx_training <- apply_labels(dfx_training)
 colnames(dfy_training) <- "label"
 
@@ -61,6 +62,7 @@ test_set <- splitted_data$test
 
 #feature selection
 p300 <- extract_P300(get_xydf(training_set))
+#noise <- extract_Noise(get_xydf(training_set))
 featured_train <- feature_selection(training_set, p300)
 featured_test <- feature_selection(test_set, p300)
 
