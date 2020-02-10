@@ -7,26 +7,27 @@ feature_selection <- function(data, p300) {
   df_y <- get_ydf(data)
   
   #------------features---------------------
-  feature_c_bin <- new_c_data(df_c)
+  #feature_c_bin <- new_c_data(df_c)
   feature_P300 <- feature_corr_P300(cbind(df_x, df_y), p300)
   feature_area <- features_area_channel(df_x)
   #feature_area_negative <- features_negative_area_channel(df_x)
   #feature_area_positive <- features_positive_area_channel(df_x)
   #feature_rt <- features_rt_channel(df_x)
   #feature_powsign <- features_signal_power(df_x)
-  #feature_cz <- features_crossing_zero(df_x)
+  feature_cz <- features_crossing_zero(df_x)
   #feature_pp <- features_peak_to_peak(df_x)
   #feature_tw <- features_time_windowPP(df_x)
   #-----------------------------------------
   #trasformo le C in una matrice  di 0 e 1 perchè la numerazione mi crea ordinamento
-  featured_data<-cbind(df_c, df_x,feature_c_bin)
+  featured_data<-cbind(df_c, df_x)
+  #featured_data<-cbind(featured_data,feature_c_bin)
   featured_data<-cbind(featured_data,feature_P300)
   featured_data<-cbind(featured_data,feature_area)
   #featured_data<-cbind(featured_data,feature_area_negative)
   #featured_data<-cbind(featured_data,feature_area_positive)
   #featured_data<-cbind(featured_data,feature_rt)
   #featured_data<-cbind(featured_data,feature_powsign)
-  #featured_data<-cbind(featured_data,feature_cz)
+  featured_data<-cbind(featured_data,feature_cz)
   #featured_data<-cbind(featured_data,feature_pp)
   #featured_data <- cbind(featured_data,feature_tw)
   #rebind delle y 

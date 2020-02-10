@@ -1,4 +1,7 @@
 CHAR_ROWS <- 120
 NUM_CHANNELS <- 8
 SAMPLE_POINTS <- 204
+NUM_ITERATIONS <- 10
+NUM_ROWS <- 6
+NUM_COLS <- 6
 CHANNELS = c("Fz", "Cz", "Pz", "Oz", "P3", "P4", "PO7", "PO8")
