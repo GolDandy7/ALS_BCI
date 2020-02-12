@@ -1,17 +1,16 @@
 choosing_cross_validation <-function(data){
-  set.seed(123)
   
   #valori di C
   cross_values<- c(0.01,0.1,1)
   #valori di Loss
   type_values<- c(1,2,7)
   #inizializzo il dataframe
-  outcomes<- data_frame()
+  outcomes<- data.frame()
   
   for(i in c(1:length(cross_values))){
     
     for(j in c(1:length(type_values))){
-      result<- cross_CT_validation(data,type_values[j],cross_values[i])
+      result<- cross_validation_param(data,type_values[j],cross_values[i])
       outcomes<- rbind(outcomes, result)
     }
   }

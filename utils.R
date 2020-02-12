@@ -32,13 +32,5 @@ get_cdf <- function(data) {
 }
 
 get_xydf <- function(data) {
-  return(as.data.frame(data[, last_col]))
-}
-
-get_cdf <- function(data) {
-  return(as.data.frame(data[, 1]))
-}
-
-get_xydf <- function(data) {
   return(as.data.frame(data[, -1]))
 }

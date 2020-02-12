@@ -385,6 +385,8 @@ feature_corr_P300 <- function(df, p300){
       matrix_corr[i,j] <- cor(p300,channel_row)
     }
   }
+  colnames(matrix_corr)<-channel_label
+  
   return(as.data.frame(matrix_corr))
 }
 

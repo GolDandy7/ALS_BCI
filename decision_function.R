@@ -21,15 +21,15 @@ decision_function<-function(dvalues,c){
   
   y<-rep(-1,num_row)
   for(i in seq_len(characters)){
-    printf("character %d\n", i)
+    #printf("character %d\n", i)
     start<-((i-1)*slice_size)+1
     end<-i*slice_size
     slice<-cdvalues[c(start:end),]
-    #print(slice)
+    #ottengo indici riga colonna
     rc<-max_values(slice,iterations)
-    #indexes<-which(cdvalues[,1]==rc[1] | cdvalues[,1]==rc[2])
+    #indici corrispondenti alla riga e colonna selezionate
     indexes<-which(slice[,1]==rc[1] | slice[,1]==rc[2])
-    
+    #assegno il valore uno a tutte le righe corrispondenti agli indici indexes
     y[(start-1)+indexes]<-1
     #print("Y per char")
     #print(y[start:end])
@@ -53,8 +53,10 @@ max_values<-function(char_data,iterations){
     #print(results[i,])
   }
   mode<-apply(results,2,weighted_mode)
-  print("mode:")
-  print(mode)
+  #mode<-apply(results,2,getmode)
+  
+  #print("mode:")
+  #print(mode)
   return(mode)
 }
 
@@ -100,8 +102,10 @@ weighted_mode <- function(v) {
   for (i in seq_len(l)) {
     match_indexes <- which(v == uniqv[i])
     for (j in match_indexes) {
-      w[i] = w[i] + (1 + 2 / (n - j + 1))
+      #w[i] = w[i] + (1 + 2 / (n - j + 1))
       #w[i] = w[i] + (2 - abs(j - m) / m)
+      w[i] = w[i] + (1 + 2 / (j + 1))
+      
     }
   }
   uniqv[which.max(w)]

@@ -3,7 +3,7 @@
 confusion_summary <- function(cm) {
   
   accuracy <- round((cm["1", "1"] + cm["-1", "-1"]) / 
-                    (cm["1", "1"] + cm["1", "-1"] + cm["-1", "-1"] + cm["-1", "1"]), 4)
+                      (cm["1", "1"] + cm["1", "-1"] + cm["-1", "-1"] + cm["-1", "1"]), 4)
   
   TPR_target <- round(((cm["1", "1"]) / (cm["1", "1"] + cm["-1", "1"])), 4)
   TPR_notarget <- round(((cm["-1", "-1"]) / (cm["-1", "-1"] + cm["1", "-1"])), 4)
@@ -13,12 +13,13 @@ confusion_summary <- function(cm) {
 
 
 
-cross_validation <- function(data) {
+cross_validation_param <- function(data,loss,cross) {
   
   k = 10
   
-  results <- matrix(0, nrow = k, ncol = 2)
-  colnames(results) <- c("Run","Accuracy")
+  results <- matrix(0, nrow = k, ncol = 3)
+  colnames(results) <- c("Avg_Accuracy", "Avg_TPR1", "Avg_TPR-1")
+  
   # genera k coppie training-set / validation-set
   folders_list <- kfold(data, k) 
   train_list <- folders_list$train
@@ -33,17 +34,18 @@ cross_validation <- function(data) {
     last_col <- ncol(train)
     x <- train[, -c(1, last_col)]
     y <- train[, last_col]
-    model <- LiblineaR(data = x, target = y, type = 7, cost = 0.01, bias = TRUE, verbose = FALSE)
+    model <- LiblineaR(data = x, target = y, type = loss, cost = cross, bias = TRUE, verbose = FALSE)
     
     #test
-    #results[i, ] <- test_accuracy(model, test)
-    results[i,] <- c(i,test_accuracy(model, test))
-    
+    results[i, ] <- test_accuracy(model, test)
   }
   print(results)
   
-  model <- LiblineaR(data = data[, -c(1, last_col)], target = data[, last_col], type = 7, cost = 0.01, bias = TRUE, verbose = FALSE)
-  return(model)
+  mean_results <- apply(results, 2, mean)
+  print(mean_results)
+  
+  #model <- LiblineaR(data = data[, -c(1, last_col)], target = data[, last_col], type = 7, cost = 0.01, bias = TRUE, verbose = FALSE)
+  return(mean_results)
 }
 
 
@@ -55,24 +57,24 @@ kfold <- function(data, k) {
   char_indexes <- sample(c(1:nchar))
   dim_folder <- floor(nchar / k)
   
-  # print("-----------K-FOLD-----------")
-  # print("Character indexes:")
-  # print(char_indexes)
-  # printf("Folder Dimension: %d\n", dim_folder)
-  # 
+  print("-----------K-FOLD-----------")
+  print("Character indexes:")
+  print(char_indexes)
+  printf("Folder Dimension: %d\n", dim_folder)
+  
   result_list <- list()
   train_list <- list()
   test_list <- list()
   run = 1
   
   for (i in seq(1, nchar - (dim_folder + nchar %% k - 1), by = dim_folder)) {
-    #printf("run %d\n", run)
+    printf("run %d\n", run)
     test <- data.frame()
     test_rows <- vector()
-    #print("test characters:")
+    print("test characters:")
     for (j in 0:(dim_folder - 1)) {
       char <- char_indexes[i + j]
-      #printf("%d\n", char)
+      printf("%d\n", char)
       start <- ((char - 1) * CHAR_ROWS) + 1
       end <- char * CHAR_ROWS
       slice <- data[c(start:end), ]
