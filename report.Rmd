@@ -9,25 +9,18 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Introduzione
+# Introduzione
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Lo scopo del progetto è quello di predire correttamente i caratteri corrispondenti a sequenze di stimolazioni provenienti da un'interfaccia BCI.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Il lavoro svolto è stato quello di utilizzare tecniche di classificazione binaria per distinguere le istanze *target* da quelle *non target*. In particolare è stato utilizzato un classificatore di tipo SVM lineare con l'ausilio di tecniche di data augmentation e feature selection, inoltre è stata modificata la funzione di decisione in modo che, in corrispondenza di ogni iterazione di stimolazioni, vengano selezionate come target una sola riga ed una sola colonna.
 
-```{r cars}
-summary(cars)
-```
+Il classificatore è stato addestrato su una porzione del dataset fornito, l'altra porzione è stata utilizzata come test ed i risultati finali hanno mostrato...
 
-## Including Plots
+# Data Understanding
+# Data Splitting
+# Data Augmentation
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 ## Funzione di decisione
 
