@@ -6,6 +6,7 @@ feature_selection <- function(data, p300) {
   df_x <- get_xdf(data)
   df_y <- get_ydf(data)
   
+  
   #------------features---------------------
   #feature_c_bin <- new_c_data(df_c)
   feature_P300 <- feature_corr_P300(cbind(df_x, df_y), p300)
@@ -34,7 +35,20 @@ feature_selection <- function(data, p300) {
   featured_data<-cbind(featured_data,df_y)
 }
 
-
+use_relief <- function(data){
+  
+  ReliefFNumNeighbour<- 70 #suggestion: if ReliefFType == ReliefFequalK  than 10, else 70.
+  ReliefFType<- "ReliefFexpRank"
+  #numero iterazione cioè m=5
+  NumIterations<-30
+  n <- ncol(data[,-c(1:1633)])
+  relief_att<-attrEval(n, data[,-c(1:1633)], estimator=ReliefFType,
+               kNearestExpRank=ReliefFNumNeighbour,
+               ReliefIterations=NumIterations)
+  #FS_ordered<- sort(FS, decreasing = T)
+  barplot(relief_att,main="Features",ylab="Eval",las=2,ylim =c(min(relief_att),max(relief_att)))
+  return(relief_att)
+}
 
 #misura il tempo in cui il segnale è crescente
 rising_time <- function(values) {

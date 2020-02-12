@@ -15,7 +15,6 @@ apply_labels <- function(df) {
   return(df)
 }
 
-
 get_xdf <- function(data) {
   last_col <- ncol(data)
 
@@ -24,11 +23,16 @@ get_xdf <- function(data) {
 
 get_ydf <- function(data) {
   last_col <- ncol(data)
-  return(as.data.frame(data[,last_col]))
+  y <- as.data.frame(data[,last_col])
+  names(y) <- "label"
+  
+  return(y)
 }
 
 get_cdf <- function(data) {
-  return(as.data.frame(data[,1]))
+  c <- as.data.frame(data[,1])
+  names(c) <- "c"
+  return(c)
 }
 
 get_xydf <- function(data) {
