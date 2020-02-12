@@ -8,6 +8,11 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+```{r include=FALSE}
+load("env.RData")
+```
+
+
 
 # Introduzione
 
@@ -17,11 +22,76 @@ Il lavoro svolto è stato quello di utilizzare tecniche di classificazione binar
 
 Il classificatore è stato addestrato su una porzione del dataset fornito, l'altra porzione è stata utilizzata come test ed i risultati finali hanno mostrato...
 
+
+
 # Data Understanding
+
+```{r}
+visualize_data(dfxy)
+```
+
+
+
 # Data Splitting
+
+Per addestrare e testare il modello, il dataset è stato suddiviso in training set e test set con una proporzione 70-30.
+
+Prima di effettuare lo split, è stata applicata una permutazione a blocchi di 120 righe, in modo da mantenere la sequenzialità delle iterazioni per ogni carattere, che viene poi sfruttata per determinare gli indici di riga e colonna corrispondenti al carattere target.
+
+
+
 # Data Augmentation
 
+Per aumentare l'accuratezza del modello, sono stati introdotti dati fittizi generati a partire da un sottoinsieme del training set.
 
-## Funzione di decisione
+Inizialmente si è provato a generare dati aggiungendo semplicemente del rumore bianco oppure effettuando piccole traslazioni temporali dei valori di tensione (in modo da rendere più "robusto" il modello a eventuali errori o ritardi di misurazione), ma ciò non ha prodotto buoni risultati in cross-validazione. La tecnica risultata efficace è stata quella di generare nuovi caratteri aventi come valori di misurazione la media delle istanze appartenenti alla stessa classe di due caratteri diversi.
 
-Funzione basata sul massimo invece che sul segno, vengono estratti i decision value ogni 120 istanze del dataset che corrispondono alle 10 iterazioni di un singolo carattere, e per ogni iterazione vengono calcolate la riga e la colonna aventi i decision value massimi
+Sperimentalmente si ottengono risultati migliori generando un numero di caratteri pari al 30\% di quelli presenti del dataset, ed ognuno di essi viene generato "mediando" il numero minimo di caratteri, perché all'aumentare di tale quantità si ottengono caratteri con meno rumore che differiscono troppo dal dataset originale.
+
+```{r}
+augmented_train <- rbind(training_set, 
+                         generate_data(training_set, 0.3, meanchar_gen, n=2))
+```
+
+
+
+# Feature Selection
+
+
+
+# Normalizzazione
+
+A seguito dell'introduzione di nuove feature i dati vengono normalizzati applicando la seguente trasformazione su ogni colonna dei dataset:
+
+\begin{displaymath}
+Z_{train} = \frac{X_{train} - \overline{X}_{train}}{\sigma_{train}}
+\qquad \quad
+Z_{test} = \frac{X_{test} - \overline{X}_{train}}{\sigma_{train}}
+\end{displaymath}
+
+Dove $\overline{X}$ e $\sigma$ sono rispettivamente media campionaria e deviazione standard dei dati delle istanze relativi ad una feature.
+
+I dati di test vengono scalati utilizzando media campionaria e deviazione standard dei dati di training, essendo quest'ultimi un campione più numeroso della stessa distribuzione.
+
+
+
+# Training
+
+
+
+# Cross-Validazione
+
+Tutti i parametri del progetto sono stati calibrati sulla base dei risultati ottenuti in fase di cross-validazione.
+
+In questa fase è stata applicata la tecnica *K-fold* con un valore di k pari a 10.
+
+
+
+# Risultati e Conclusioni
+
+
+
+
+# How To
+
+
