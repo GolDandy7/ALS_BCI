@@ -1,0 +1,34 @@
+---
+title: "P300 Speller with patient with ALS"
+subtitle: "Progetto MOBD 2018/19"
+author: "Conidi Andrea, Falvo Simone"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduzione
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Funzione di decisione
+
+Funzione basata sul massimo invece che sul segno, vengono estratti i decision value ogni 120 istanze del dataset che corrispondono alle 10 iterazioni di un singolo carattere, e per ogni iterazione vengono calcolate la riga e la colonna aventi i decision value massimi
