@@ -45,16 +45,17 @@ cross_CT_validation <- function(data,loss,c) {
     last_col <- ncol(train)
     x <- train[, -last_col]
     y <- train[, last_col]
-    model <- LiblineaR(data = x, target = y, type =loss, cost = c, bias = TRUE, verbose = FALSE)
+    #model <- LiblineaR(data = x, target = y, type =loss, cost = c, bias = TRUE, verbose = FALSE)
+    model <- LiblineaR(data = data[, -c(1, last_col)], target = data[, last_col], type = loss, cost = c, bias = TRUE, verbose = FALSE)
     
     last_col <- ncol(test)
     x <- test[, -last_col]
     y <- test[, last_col]
-    prediction <- predict(model, x, decisionValues = TRUE)
-    confusion_matrix <- table(predicted = prediction$predictions, observation = y)
+    #prediction <- predict(model, x, decisionValues = TRUE)
+    #confusion_matrix <- table(predicted = prediction$predictions, observation = y)
     #print("Confusion Matrix:")
     #print(confusion_matrix)
-    results[run,] <- confusion_summary(confusion_matrix)
+    results[run,] <- test_accuracy(model,x)
     run <- run + 1
   }
   

@@ -2,14 +2,11 @@ generate_data <- function(data, portion, func, ...) {
   
   # numero di caratteri da cui vengono genrati i nuovi dati
   sample_size <- floor(portion * nrow(data) / CHAR_ROWS)
-  print(sample_size)
-  
   new_data <- data.frame()
   
   extraction_indexes <- c(1:(sample_size * CHAR_ROWS))
 
   extracted_data <- data[extraction_indexes, ]
-  print(nrow(extracted_data))
   new_data <- func(extracted_data, ...)
   names(new_data) <- names(data)
   

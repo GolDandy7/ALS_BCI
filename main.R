@@ -3,16 +3,15 @@ library("LiblineaR")
 library("e1071")
 library(CORElearn)
 library("R.utils")
-library(DescTools)
 library(Bolstad2)
-
+library(DescTools)
 source("constants.R")
 source("data_split.R")
 source("utils.R")
 source("new_c_data.R")
 source("normalization.R")
 source("cross_validation.R")
-source("cross_CT_validation.R")
+source("cross_validation_param.R")
 source("choosing_cross_validation.R")
 source("test_accuracy.R")
 source("decision_function.R")
@@ -30,6 +29,7 @@ dfy_training <- read.table("Y.txt", header = FALSE)
 #dfy_test <- read.table("Y_test.txt", header = FALSE)
 
 #Applicazione delle etichette sulle colonne del df
+#dfx_training <- feature_smooth(dfx_training)
 dfx_training <- apply_labels(dfx_training)
 colnames(dfc_training) <- "c"
 colnames(dfy_training) <- "label"
@@ -63,6 +63,7 @@ augmented_train <- rbind(training_set, generate_data(training_set, 0.3, meanchar
 
 
 #feature selection
+
 p300 <- extract_P300(get_xydf(augmented_train))
 featured_train <- feature_selection(augmented_train, p300)
 featured_test <- feature_selection(test_set, p300)
@@ -81,4 +82,4 @@ model <- cross_validation(scaled_data$train)
 
 #test
 accuracy <- test_accuracy(model, scaled_data$test)
-accuracy
+printf("Caratteri predetti correttamente : %.2f %%",accuracy*100)
