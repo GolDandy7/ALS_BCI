@@ -54,24 +54,16 @@ kfold <- function(data, k) {
   char_indexes <- sample(c(1:nchar))
   dim_folder <- floor(nchar / k)
   
-  # print("-----------K-FOLD-----------")
-  # print("Character indexes:")
-  # print(char_indexes)
-  # printf("Folder Dimension: %d\n", dim_folder)
-  # 
   result_list <- list()
   train_list <- list()
   test_list <- list()
   run = 1
   
   for (i in seq(1, nchar - (dim_folder + nchar %% k - 1), by = dim_folder)) {
-    #printf("run %d\n", run)
     test <- data.frame()
     test_rows <- vector()
-    #print("test characters:")
     for (j in 0:(dim_folder - 1)) {
       char <- char_indexes[i + j]
-      #printf("%d\n", char)
       start <- ((char - 1) * CHAR_ROWS) + 1
       end <- char * CHAR_ROWS
       slice <- data[c(start:end), ]

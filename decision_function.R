@@ -21,7 +21,6 @@ decision_function<-function(dvalues,c){
   
   y<-rep(-1,num_row)
   for(i in seq_len(characters)){
-    #printf("character %d\n", i)
     start<-((i-1)*slice_size)+1
     end<-i*slice_size
     slice<-cdvalues[c(start:end),]
@@ -31,8 +30,6 @@ decision_function<-function(dvalues,c){
     indexes<-which(slice[,1]==rc[1] | slice[,1]==rc[2])
     #assegno il valore uno a tutte le righe corrispondenti agli indici indexes
     y[(start-1)+indexes]<-1
-    #print("Y per char")
-    #print(y[start:end])
   }
   return(y)
 }
@@ -46,17 +43,12 @@ max_values<-function(char_data,iterations){
     start<-((i-1)*iteration_size)+1
     end<-i*iteration_size
     iteration_slice<-char_data[c(start:end),]
-    #print("iter slice")
-    #print(iteration_slice)
     results[i,]<-max_rc(iteration_slice)
-    #print("Result i")
-    #print(results[i,])
+    
   }
-  mode<-apply(results,2,weighted_mode)
-  #mode<-apply(results,2,getmode)
+  #mode<-apply(results,2,weighted_mode)
+  mode<-apply(results,2,getmode)
   
-  #print("mode:")
-  #print(mode)
   return(mode)
 }
 

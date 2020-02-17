@@ -7,11 +7,11 @@ test_accuracy <-function(model, test) {
   
   prediction <- max_predict(model, x, c)
   confusion_matrix <- table(predicted = prediction, observation = y)
-  print("Confusion Matrix:")
-  print(confusion_matrix)
+  #print("Confusion Matrix:")
+  #print(confusion_matrix)
   char_acc <- char_accuracy(prediction,y)
-  print("Confusion Summary \n")
-  print(confusion_summary(confusion_matrix))
+  #print("Confusion Summary \n")
+  #print(confusion_summary(confusion_matrix))
   return(char_acc)
 }
 

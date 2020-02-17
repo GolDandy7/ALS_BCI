@@ -18,10 +18,13 @@ visualize_data <- function(data) {
     target_avg <- apply(target_data, 2, mean)
     nontarget_avg <- apply(nontarget_data, 2, mean)
     matplot(x, target_avg, type="l", col="red")
-    lines(x, target_avg - nontarget_avg, type="l", col="blue")
-    lines(x, nontarget_avg, type="l",col="green")
+    lines(x, nontarget_avg, type="l", col="blue")
+    legend(0, max(target_avg), legend=c("Target", "NoTarget"),
+           col=c( "red", "blue"), lty=1:1, cex=0.5)
     m <- rbind(m, target_avg)
   }
   average <- apply(m, 2, mean)
   matplot(x, average, type="l", col="red")
+  legend(0, max(average), legend=c("Avg Targer"),
+         col=c("red"), lty=1:1, cex=0.7)
 }
