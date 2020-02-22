@@ -1,12 +1,13 @@
 generate_data <- function(data, portion, func, ...) {
   
-  # numero di caratteri da cui vengono genrati i nuovi dati
+  # numero di caratteri da cui vengono generati i nuovi dati
   sample_size <- floor(portion * nrow(data) / CHAR_ROWS)
   new_data <- data.frame()
   
   extraction_indexes <- c(1:(sample_size * CHAR_ROWS))
 
   extracted_data <- data[extraction_indexes, ]
+  # esecuzione della funzione di augmentation sui dati estratti
   new_data <- func(extracted_data, ...)
   names(new_data) <- names(data)
   
@@ -17,15 +18,14 @@ generate_data <- function(data, portion, func, ...) {
 # genera nuovi caratteri facendo la media di 'n' caratteri
 meanchar_gen <- function(data, n) {
   num_chars <- nrow(data) / CHAR_ROWS
-  if (n >= num_chars) {
+  if (n > num_chars) {
     print("numero di caratteri di partenza troppo grande")
     stop()
   }
-  # aggiungi il primo carattere alla fine del dataset per ottenere esattamente n nuovi caratteri
-  data <- rbind(data, data[1:(CHAR_ROWS * (n - 1)), ])
+  num_new_chars = floor(num_chars / n)  # numero di caratteri da generare
   new_data <- data.frame()
   
-  for (i in seq_len(num_chars)) {
+  for (i in seq(1, num_new_chars * n, by=n)) {
     start <- (i - 1) * CHAR_ROWS + 1
     end <- start + n * CHAR_ROWS
     selected_chars <- data[start:end, ]
@@ -33,6 +33,7 @@ meanchar_gen <- function(data, n) {
     new_data <- rbind(new_data, new_char)
   }
   
+  print(paste0("Numeri di caratteri generati: ", num_new_chars))
   return(new_data)
 }
 
@@ -122,8 +123,6 @@ put_noise <- function(data) {
 # Sfasamento del segnale: shift a destra di "shift_size" posizioni dei valori 
 # della righe del dataframe e rimpiazza i primi "shift_size" elementi con i valori medi 
 right_shift <- function(data, shift_size) {
-  #print("right shift function")
-  #printf("shift_size = %d\n", shift_size)
   num_col <- ncol(data)
   c <- data[, 1]
   x <- data[, -c(1, num_col)]
