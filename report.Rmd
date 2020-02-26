@@ -3,6 +3,7 @@ title: "P300 Speller with patient with ALS"
 subtitle: "Progetto MOBD 2018/19"
 author: "Conidi Andrea, Falvo Simone"
 output: pdf_document
+bibliography: bibliography.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -13,21 +14,30 @@ knitr::opts_chunk$set(echo = TRUE)
 source("main.R")
 ```
 
+
+
+
 # Introduzione
 
 Lo scopo del progetto è quello di predire correttamente i caratteri corrispondenti a sequenze di stimolazioni provenienti da un'interfaccia BCI.
 
 Il lavoro svolto è stato quello di utilizzare tecniche di classificazione binaria per distinguere le istanze *target* da quelle *non target*. In particolare è stato utilizzato un classificatore di tipo SVM lineare con l'ausilio di tecniche di data augmentation e feature selection, inoltre è stata modificata la funzione di decisione in modo che, in corrispondenza di ogni iterazione di stimolazioni, vengano selezionate come target una sola riga ed una sola colonna.
 
-Il classificatore è stato addestrato su una porzione del dataset fornito, l'altra porzione è stata utilizzata come test ed i risultati finali hanno mostrato...
+Il classificatore è stato addestrato su una porzione del dataset fornito, l'altra porzione è stata utilizzata come test ed i risultati finali hanno mostrato un'accuratezza del 100\% sul test set e in cross-validazione.
+
 
 
 
 # Data Understanding
 
-```{r}
+Per prima cosa si è tentato di avere una panoramica generale sulle classi del dataset, pertanto sono stati graficati i segnali registrati per elettrodo, distinguendo le forme d'onda relative alle istanze *target* e *non target* ed effettuando una media su di esse in modo da ridurre il più possibile il rumore.
+
+La figura \ref{fig:overview} mostra chiaramente la componente P300 (in rosso) che si distingue dalla stimolazione media legata ai caratteri non target che non mostra un particolare andamento. 
+
+```{r overview, echo=FALSE, fig.cap="\\label{fig:overview}Panoramica stimolazioni target (linea rossa) e non target (linea blu) per gli otto elettrodi, l’ultimo grafico (in basso a destra) rappresenta la media degli stimoli target su tutti gli elettrodi"}
 visualize_data(dfxy)
 ```
+
 
 
 
@@ -39,48 +49,44 @@ Prima di effettuare lo split, è stata applicata una permutazione a blocchi di 1
 
 
 
+
 # Data Augmentation
 
 Per aumentare l'accuratezza del modello, sono stati introdotti dati fittizi generati a partire da un sottoinsieme del training set.
 
 Inizialmente si è provato a generare dati aggiungendo semplicemente del rumore bianco oppure effettuando piccole traslazioni temporali dei valori di tensione (in modo da rendere più "robusto" il modello a eventuali errori o ritardi di misurazione), ma ciò non ha prodotto buoni risultati in cross-validazione. La tecnica risultata efficace è stata quella di generare nuovi caratteri aventi come valori di misurazione la media delle istanze appartenenti alla stessa classe di due caratteri diversi.
 
-Sperimentalmente si ottengono risultati migliori generando un numero di caratteri pari al 30\% di quelli presenti del dataset, ed ognuno di essi viene generato "mediando" il numero minimo di caratteri, perché all'aumentare di tale quantità si ottengono caratteri con meno rumore che differiscono troppo dal dataset originale.
+Sperimentalmente si ottengono risultati migliori generando un numero di caratteri pari al 30\% di quelli presenti nel dataset, ed ognuno di essi viene generato "mediando" il numero minimo di caratteri, perché all'aumentare di tale quantità si ottengono caratteri con meno rumore che differiscono troppo dal dataset originale.
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 augmented_train <- rbind(training_set, 
-                         generate_data(training_set, 0.3, meanchar_gen, n=2))
+                         generate_data(training_set, 0.6, meanchar_gen, n=2))
 ```
+
 
 
 
 # Feature Selection
 
-Le feature implementate sono state prese dall'articolo *A new approach for EEG feature extraction in P300-based lie detection*.
-Tra le feature sugerite dall'articolo si è deciso di provare a utilizzare:
+In questa fase si è provato ad estrarre dai dati a disposizione nuove feature che potessero essere rilevanti ai fini della classificazione, a tale scopo è stato utile il lavoro di @ABOOTALEBI200948, tra le feature proposte si è deciso di provare a utilizzare:
 
-* Area Positiva
-* Area Negativa
-* Area assoluta : somma dei moduli delle due aree precedenti
+* Area Positiva: somma integrale dell'area positiva sottesa dalla curva
+* Area Negativa: somma integrale dell'area negativa sottesa dalla curva
+* Area assoluta: somma dei moduli delle due aree precedenti
 * Crossing Zero: numero di volte in cui il segnale passa per zero
-* Potenza del segnale: cacolata come potenza=x
-* Valore di Picco Picco
+* Potenza del segnale: cacolata come potenza $X^T X$, dove $X$ è il vettore delle misurazioni
+* Valore di Picco Picco: differenza tra valore massimo e valore minimo di tensione
 * Time Window: intervallo di tempo tra il picco positivo e negativo
 
 Alcune delle feature sono invece state implementate analizzando i dati nella fase di data understanding:
 
-* Rising Time: conta gli istanti temporali in cui il segnale è crescente
-* Correlazione P300: calcola dal training set il segnale medio corrispondente alla P300 e costruisce la          matrice di correlazione con tutte le misurazioni.
-* C_bin: matrice binaria calcolata a partire dal file C.txt, dove l'elemento c_bin[i,j]=1 se c[i]=j
+* Rising Time: misura dell'intravallo temporale in cui il segnale è crescente
+* Correlazione P300: correlazione del segnale rispetto alla P300 ideale (estratta tramite dalle istanze target del training set) 
+* $C_{bin}$: matrice binaria calcolata a partire dal file "C.txt", dove l'elemento $C_{bin}[i,j]=1$ se $C[i]=j$
 
-La scelta delle features è stata fatta valutando le varie combinazioni in cross validation. Il set migliore è stato quello composto da: Area Assoluta,P300 e Crossing Zero.
+La scelta delle features è stata fatta valutando le varie combinazioni in cross validation. Il set migliore è stato quello composto da: Area Assoluta, P300 e Crossing Zero.
 
-## Relief
 
-Le features selezione sono state valutate tramite la Relief. Di seguito l'istogramma contenente le valutazioni degli attributi:
-```{r message=FALSE, warning=FALSE}
-use_relief(featured_train)
-```
 
 
 # Normalizzazione
@@ -102,13 +108,16 @@ I dati di test vengono scalati utilizzando media campionaria e deviazione standa
 
 # Training
 
-Nella fase iniziale del progetto sono stati provati vari classificatori ma i risultati migliori si sono ottenuti con liblinear.
-La scelta dei parametri di type e loss sono stati determinati in cross-validation ottenendo come set ottimale : type=7 e cost=0.01.
+Nella fase iniziale del progetto sono stati provati vari classificatori proposti da Manyakov et al. [-@Manyakov2011], ma i risultati migliori in cross-validazione si sono ottenuti con una SVM lineare. In particolare si è scelto di impiegare l'algoritmo *liblinear* con i valori dei parametri type e cost rispettivamente pari a 7 e 0.01.
+
+
+
 
 ## Funzione di decisione
 
 Funzione basata sul massimo invece che sul segno. Partendo dai decision values ottenuti dalla predict di liblinear si seleziona un blocco di 120 righe corrispondente a un carattere e ogni 12 righe vengono estratti gli indici riga e colonna  contenententi il valore massimo.
-Il risultato per ogni carattere sarà una matrice di indici riga/colonna  target, con un numero di righe pari al numero di iterazioni. A tale matrice viene applicata la moda per colonne ottenendo  la combinazione più frequente. Dopodiché si genera il nuovo blocco di predizioni impostando come target le istanze corrispondenti agli indici selezionati. 
+Il risultato per ogni carattere sarà una matrice di indici riga/colonna target, con un numero di righe pari al numero di iterazioni. A tale matrice viene applicata la moda per colonne ottenendo la combinazione più frequente. L'assegnazione di pesi non uniformi alle iterazioni non produce risultati migliori, in particolare, dando più "importanza" alle prime o alle ultime o alle iterazioni centrali si ottengono valori minori o uguali di accuratezza. Infine si genera il nuovo blocco di predizioni impostando come target le istanze corrispondenti agli indici selezionati.
+
 
 
 
@@ -117,7 +126,9 @@ Il risultato per ogni carattere sarà una matrice di indici riga/colonna  target
 Tutti i parametri del progetto sono stati calibrati sulla base dei risultati ottenuti in fase di cross-validazione.
 
 In questa fase è stata applicata la tecnica *K-fold* con un valore di k pari a 10.
-```{r message=FALSE, warning=FALSE}
+
+Di seguito i risultati che si ottengono:
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 cv_results <- cross_validation(scaled_data$train, 
                                classifier = LiblineaR, 
                                type = 7, cost = 0.01, bias = TRUE, verbose = FALSE)
@@ -128,24 +139,34 @@ print(cv_results)
 
 
 
+
 # Risultati e Conclusioni
 
 Infine il modello viene valutato sul test set, fornendo un'indicazione della percentuale di caratteri correttamenti classificati.
 
-I risultati mostrano sul test un'accuretezza pari al 100%%, tale risultato è stato ottenuto con un seme iniziale pari a 123.
+I risultati mostrano sul test un'accuretezza pari al 100\%, tale risultato è stato ottenuto con un seme iniziale pari a 123.
 
 ```{r}
 accuracy <- test_accuracy(model, scaled_data$test)
-#printf("Caratteri predetti correttamente: %.2f %%", accuracy * 100)
+printf("Caratteri predetti correttamente: %.2f%%", accuracy * 100)
 ```
 
 
 
-# How To Test
 
-Per addestrare e testare il modello con un nuovo Test set bisogna accedere al file main_test.R, deccomentare la seguente sezione di codice sostituendo i nomi dei file con quelli del test..
+# How-To Test
+
+Per e testare il modello con un nuovo test set bisogna accedere al file "main_test.R" e sostituire i nomi dei file con quelli del test.
+In questo caso il modello viene addestrato su tutto il training set a disposizione.
 ```{r}
+
 #dfx_test <- read.table("X_test.txt", header = FALSE)
 #dfc_test <- read.table("C_test.txt", header = FALSE)
 #dfy_test <- read.table("Y_test.txt", header = FALSE)
+
 ```
+
+
+
+
+# Riferimenti Bibliografici
