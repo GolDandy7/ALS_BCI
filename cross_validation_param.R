@@ -12,7 +12,8 @@ confusion_summary <- function(cm) {
 }
 
 
-
+#Metodo usato in fase preliminare per determinare il miglior setting
+# dei parametri per liblinear.
 cross_validation_param <- function(data,loss,cross) {
   
   k = 10

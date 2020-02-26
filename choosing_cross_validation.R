@@ -1,3 +1,5 @@
+
+#mostra in output i risultati in cross validation in base al setting dei parametri.
 choosing_cross_validation <-function(data){
   
   #valori di C

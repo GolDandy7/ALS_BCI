@@ -158,7 +158,7 @@ compute_positive_area <-function(channel_data){
 }
 
 
-#conta il numero di valori positivi --> non serve
+#conta il numero di valori positivi 
 features_positive<-function(df_x){
   
   channel_label<-c("Fz_+", "Cz_+", "Pz_+", "Oz_+", "P3_+", "P4_+", "PO7_+", "PO8_+")
@@ -444,7 +444,8 @@ feature_corr_P300 <- function(df, p300){
   return(as.data.frame(matrix_corr))
 }
 
-
+# Metodo che dato un segnale in ingresso, mostra in uscita lo stesso
+# segnale ma smussato.
 feature_smooth <- function(df_x){
   
   rows <- nrow(df_x)
@@ -462,6 +463,8 @@ feature_smooth <- function(df_x){
 }
 
 
+# Dal dataset viene calcolato il segnale medio target e non target
+# e come valore di output la differenza  tra i due segnali.
 extract_Noise <- function(data) {
   
   channels <- c(1:NUM_CHANNELS)
@@ -486,7 +489,7 @@ extract_Noise <- function(data) {
   return(as.numeric(target-notarget))
 }
 
-
+#Metodo che toglie dal dataset il rumore calcolato nella funzione precedente
 feature_delete_noise <-function(df_x,noise){
   
   rows <- nrow(df_x)
