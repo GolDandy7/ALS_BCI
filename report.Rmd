@@ -158,6 +158,7 @@ printf("Caratteri predetti correttamente: %.2f%%", accuracy * 100)
 
 Per e testare il modello con un nuovo test set bisogna accedere al file "main_test.R" e sostituire i nomi dei file con quelli del test.
 In questo caso il modello viene addestrato su tutto il training set a disposizione.
+L'esecuzione può richiedere qualche minuto poiché la generazione delle feature è un calcolo molto oneroso.
 ```{r}
 
 #dfx_test <- read.table("X_test.txt", header = FALSE)

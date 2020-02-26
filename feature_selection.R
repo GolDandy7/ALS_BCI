@@ -37,6 +37,7 @@ feature_selection <- function(data, p300) {
   featured_data<-cbind(featured_data,df_y)
 }
 
+
 use_relief <- function(data){
   
   ReliefFNumNeighbour<- 70 #suggestion: if ReliefFType == ReliefFequalK  than 10, else 70.
@@ -88,8 +89,8 @@ rising_time <- function(values) {
   return(total_time)
 }
 
-#potenza del segnale
 
+#potenza del segnale
 signal_power <- function(values){
   power = 0
   k<-length(values)
@@ -101,6 +102,8 @@ signal_power <- function(values){
   return(power)
   
 }
+
+
 #conta il numero di occorrenze per zero della funzione
 crossing_zero <- function(values) {
   
@@ -122,15 +125,16 @@ crossing_zero <- function(values) {
   
 }
 
+
 #misura l'area totale del segnale
 compute_area<-function(channel_data){
   
   #determino la dimensione del channel(nel nostro caso deve essere di 204)
-  
   dim<-length(channel_data)
   area<-AUC(x=c(1:dim),y=abs(channel_data),method = "trapezoid")
   return(area)
 }
+
 
 #misura l'area negativa del segnale
 compute_negative_area <-function(channel_data){
@@ -142,6 +146,7 @@ compute_negative_area <-function(channel_data){
   
 }
 
+
 #misura l'area positiva del segnale
 compute_positive_area <-function(channel_data){
   
@@ -151,6 +156,7 @@ compute_positive_area <-function(channel_data){
   return(area)
   
 }
+
 
 #conta il numero di valori positivi --> non serve
 features_positive<-function(df_x){
@@ -173,6 +179,7 @@ features_positive<-function(df_x){
   return(features_positives)
 }
 
+
 #misura  il tempo di salita del segnale
 features_rt_channel<-function(df_x){
   
@@ -194,9 +201,11 @@ features_rt_channel<-function(df_x){
   return(features_rt)
 }
 
+
 #calcola il valore del modulo dell'area
 features_area_channel<-function(df_x){
   
+  print("Calcolo feature Area ...")
   channel_label<-c("Fz_Area", "Cz_Area", "Pz_Area", "Oz_Area", "P3_Area", "P4_Area", "PO7_Area", "PO8_Area")
   size<-ncol(df_x)/NUM_CHANNELS
   features_area<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
@@ -212,8 +221,10 @@ features_area_channel<-function(df_x){
  }
   colnames(features_area)<-channel_label
   features_area<-as.data.frame(features_area)
+  print("Calcolo feature Area completato")
   return(features_area)
 }
+
 
 #calcola il valore dell'area positiva
 features_positive_area_channel<-function(df_x){
@@ -236,13 +247,13 @@ features_positive_area_channel<-function(df_x){
   return(features_area)
 }
 
+
 #calcola il valore dell'area negativa
 features_negative_area_channel<-function(df_x){
   
   channel_label<-c("Fz_Area+", "Cz_Area-", "Pz_Area-", "Oz_Area-", "P3_Area-", "P4_Area-", "PO7_Area-", "PO8_Area-")
   size<-ncol(df_x)/NUM_CHANNELS
   features_area<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
-  
   
   for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
@@ -257,13 +268,13 @@ features_negative_area_channel<-function(df_x){
   return(features_area)
 }
 
+
 #calcola il valore di picco del segnale x canale
 features_peak<-function(df_x){
   
   channel_label<-c("Fz_peak", "Cz_peak", "Pz_peak", "Oz_peak", "P3_peak", "P4_peak", "PO7_peak", "PO8_peak")
   size<-ncol(df_x)/NUM_CHANNELS
   features_peak_values<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
-  
   
   for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
@@ -278,13 +289,13 @@ features_peak<-function(df_x){
   return(features_peak_values)
 }
 
+
 #calcola il valore di picco picco del segnale x canale
 features_peak_to_peak<-function(df_x){
   
   channel_label<-c("Fz_PPeak", "Cz_PPeak", "Pz_PPeak", "Oz_PPeak", "P3_PPeak", "P4_PPeak", "PO7_PPeak", "PO8_PPeak")
   size<-ncol(df_x)/NUM_CHANNELS
   features_Ppeak_values<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
-  
   
   for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
@@ -300,13 +311,13 @@ features_peak_to_peak<-function(df_x){
   return(features_Ppeak_values)
 }
 
-#calcola il valore di picco del segnale x canale
+
+#calcola il valore di picco del segnale per canale
 features_peak<-function(df_x){
   
   channel_label<-c("Fz_peak", "Cz_peak", "Pz_peak", "Oz_peak", "P3_peak", "P4_peak", "PO7_peak", "PO8_peak")
   size<-ncol(df_x)/NUM_CHANNELS
   features_peak_values<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
-  
   
   for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
@@ -321,13 +332,13 @@ features_peak<-function(df_x){
   return(features_peak_values)
 }
 
-#calcola la lunghezza della finestra temporale di picco picco del segnale x canale
+
+#calcola la lunghezza della finestra temporale di picco picco del segnale per canale
 features_time_windowPP<-function(df_x){
   
   channel_label<-c("Fz_PPeak", "Cz_TW", "Pz_TW", "Oz_TW", "P3_TW", "P4_TW", "PO7_TW", "PO8_TW")
   size<-ncol(df_x)/NUM_CHANNELS
   features_time_window<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
-  
   
   for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
@@ -343,13 +354,14 @@ features_time_windowPP<-function(df_x){
   return(features_time_window)
 }
 
+
 #calcola quante volte il segnale passa per zero
 features_crossing_zero<-function(df_x){
+  print("Calcolo feature cz ...")
   
   channel_label<-c("Fz_Cross0", "Cz_Cross0", "Pz_Cross0", "Oz_Cross0", "P3_Cross0", "P4_Cross0", "PO7_Cross0", "PO8_Cross0")
   size<-ncol(df_x)/NUM_CHANNELS
   features_czero_values<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
-  
   
   for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
@@ -361,8 +373,10 @@ features_crossing_zero<-function(df_x){
   }
   colnames(features_czero_values)<-channel_label
   features_czero_values <-as.data.frame(features_czero_values)
+  print("Calcolo feature cz completato")
   return(features_czero_values)
 }
+
 
 #feature che calcola la potenza del segnale
 features_signal_power<-function(df_x){
@@ -370,7 +384,6 @@ features_signal_power<-function(df_x){
   channel_label<-c("Fz_Pow", "Cz_Pow", "Pz_Pow", "Oz_Pow", "P3_Pow", "P4_Pow", "PO7_Pow", "PO8_Pow")
   size<-ncol(df_x)/NUM_CHANNELS
   features_power<-(matrix(ncol = NUM_CHANNELS,nrow = nrow(df_x)))
-  
   
   for(i in seq_len(NUM_CHANNELS)){
     #printf("Iterazione: %d\n",i)
@@ -385,6 +398,7 @@ features_signal_power<-function(df_x){
   return(features_power)
 }
 
+#estrazione di un vettore contenente i valori relati alla P300 ideale
 extract_P300 <- function(data) {
   
   channels <- c(1:NUM_CHANNELS)
@@ -407,13 +421,15 @@ extract_P300 <- function(data) {
   return(as.numeric(average))
 }
 
+
+#Calcolo della correlazione tra la riga di dataframe e la P300 ideale
 feature_corr_P300 <- function(df, p300){
   
+  print("Calcolo feature Corr P300 ...")
   num_rows <- nrow(df)
   size<-ncol(df)/NUM_CHANNELS
   matrix_corr <- matrix(nrow = num_rows,ncol = NUM_CHANNELS)
   channel_label<-c("Fz_Corr", "Cz_Corr", "Pz_Corr", "Oz_Corr", "P3_Corr", "P4_Corr", "PO7_Corr", "PO8_Corr")
-  #funzione di simone per ottenere la p300 media -> variabile di nome p300.
   for(i in seq_len(num_rows)){
     for(j in seq_len(NUM_CHANNELS)){
       start<-((j-1)*size)+1
@@ -424,8 +440,10 @@ feature_corr_P300 <- function(df, p300){
   }
   colnames(matrix_corr)<-channel_label
   
+  print("Calcolo feature Corr P300 completato")
   return(as.data.frame(matrix_corr))
 }
+
 
 feature_smooth <- function(df_x){
   
@@ -442,6 +460,8 @@ feature_smooth <- function(df_x){
   }
   return(as.data.frame(matrix_smooth))
 }
+
+
 extract_Noise <- function(data) {
   
   channels <- c(1:NUM_CHANNELS)
@@ -465,6 +485,7 @@ extract_Noise <- function(data) {
   #matplot(x, average, type="l", col="red")
   return(as.numeric(target-notarget))
 }
+
 
 feature_delete_noise <-function(df_x,noise){
   

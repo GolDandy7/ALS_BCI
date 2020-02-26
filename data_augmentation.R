@@ -1,5 +1,4 @@
 generate_data <- function(data, portion, func, ...) {
-  
   # numero di caratteri da cui vengono generati i nuovi dati
   sample_size <- floor(portion * nrow(data) / CHAR_ROWS)
   new_data <- data.frame()
@@ -17,6 +16,7 @@ generate_data <- function(data, portion, func, ...) {
 
 # genera nuovi caratteri facendo la media di 'n' caratteri
 meanchar_gen <- function(data, n) {
+  print("Generazione nuovi caratteri...")
   num_chars <- nrow(data) / CHAR_ROWS
   if (n > num_chars) {
     print("numero di caratteri di partenza troppo grande")
