@@ -25,6 +25,6 @@ visualize_data <- function(data) {
   }
   average <- apply(m, 2, mean)
   matplot(x, average, type="l", col="red")
-  legend(0, max(average), legend=c("Avg Targer"),
+  legend(0, max(average), legend=c("Avg Target"),
          col=c("red"), lty=1:1, cex=0.7)
 }

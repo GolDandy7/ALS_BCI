@@ -8,7 +8,6 @@ library(DescTools)
 source("constants.R")
 source("data_split.R")
 source("utils.R")
-source("new_c_data.R")
 source("normalization.R")
 source("cross_validation.R")
 source("cross_validation_param.R")
@@ -24,9 +23,7 @@ source("data_understanding.R")
 dfx_training <- read.table("X.txt", header = FALSE)
 dfc_training <- read.table("C.txt", header = FALSE)
 dfy_training <- read.table("Y.txt", header = FALSE)
-#dfx_test <- read.table("X_test.txt", header = FALSE)
-#dfc_test <- read.table("C_test.txt", header = FALSE)
-#dfy_test <- read.table("Y_test.txt", header = FALSE)
+
 
 #Applicazione delle etichette sulle colonne del df
 #dfx_training <- feature_smooth(dfx_training)
@@ -34,13 +31,10 @@ dfx_training <- apply_labels(dfx_training)
 colnames(dfc_training) <- "c"
 colnames(dfy_training) <- "label"
 
+
 #set del seme per la ripetibilità dell'esperimento
 set.seed(123)
 
-#eliminazione canali
-#fourth_ccol <- c(((4-1) * SAMPLE_POINTS + 1):(4 * SAMPLE_POINTS))
-#seventh_ccol <- c(((7-1) * sample_pointS + 1):(7 * SAMPLE_POINTS))
-#dfx <- dfx_training[, -c(fourth_ccol, seventh_ccol)]
 
 # bind delle istanze con le corrispondenti etichette
 dfxy <- cbind(dfx_training, dfy_training)
@@ -56,11 +50,8 @@ test_set <- splitted_data$test
 
 
 #data augmentation
-#augmented_train <- rbind(dfcxy, generate_data(dfcxy, 0.3, put_noise))
-#augmented_train <- rbind(dfcxy, generate_data(dfcxy, 0.3, right_shift, shift_size = floor(SAMPLE_POINTS * 0.1)))
 augmented_train <- rbind(training_set, 
-                         generate_data(training_set, 0.3, meanchar_gen, n=2))
-#augmented_train <- training_set
+                         generate_data(training_set, 0.6, meanchar_gen, n=2))
 
 
 #feature selection
@@ -78,10 +69,10 @@ model <- LiblineaR(data = get_xdf(scaled_data$train),
                    target = get_ydf(scaled_data$train),
                    type = 7, cost = 0.01, bias = TRUE, verbose = FALSE)
 
-#---------crossvalidazione-------------
-#scegliamo il valore migliore di loss e c
+
+#crossvalidazione
+#scelta del valore migliore di loss e c
 #outcome<- choosing_cross_validation(scaled_data$train)
-#rifacciamo cross_validation sul train
 cv_results <- cross_validation(scaled_data$train, 
                                classifier = LiblineaR, 
                                type = 7, cost = 0.01, bias = TRUE, verbose = FALSE)

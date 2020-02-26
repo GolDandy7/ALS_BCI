@@ -8,7 +8,8 @@ feature_selection <- function(data, p300) {
   
   
   #------------features---------------------
-  #feature_c_bin <- new_c_data(df_c)
+  #trasformo le C in una matrice  di 0 e 1 perchè la numerazione mi crea ordinamento
+  #feature_c_bin <- to_categorical(df_c)
   feature_P300 <- feature_corr_P300(cbind(df_x, df_y), p300)
   feature_area <- features_area_channel(df_x)
   #feature_area_negative <- features_negative_area_channel(df_x)
@@ -18,20 +19,21 @@ feature_selection <- function(data, p300) {
   feature_cz <- features_crossing_zero(df_x)
   #feature_pp <- features_peak_to_peak(df_x)
   #feature_tw <- features_time_windowPP(df_x)
+  
   #-----------------------------------------
-  #trasformo le C in una matrice  di 0 e 1 perchè la numerazione mi crea ordinamento
   featured_data<-cbind(df_c, df_x)
-  #featured_data<-cbind(featured_data,feature_c_bin)
-  featured_data<-cbind(featured_data,feature_P300)
-  featured_data<-cbind(featured_data,feature_area)
-  #featured_data<-cbind(featured_data,feature_area_negative)
-  #featured_data<-cbind(featured_data,feature_area_positive)
-  #featured_data<-cbind(featured_data,feature_rt)
-  #featured_data<-cbind(featured_data,feature_powsign)
-  featured_data<-cbind(featured_data,feature_cz)
-  #featured_data<-cbind(featured_data,feature_pp)
+  
+  #featured_data <- cbind(featured_data,feature_c_bin)
+  featured_data <- cbind(featured_data,feature_P300)
+  featured_data <- cbind(featured_data,feature_area)
+  #featured_data <- cbind(featured_data,feature_area_negative)
+  #featured_data <- cbind(featured_data,feature_area_positive)
+  #featured_data <- cbind(featured_data,feature_rt)
+  #featured_data <- cbind(featured_data,feature_powsign)
+  featured_data <- cbind(featured_data,feature_cz)
+  #featured_data <- cbind(featured_data,feature_pp)
   #featured_data <- cbind(featured_data,feature_tw)
-  #rebind delle y 
+  
   featured_data<-cbind(featured_data,df_y)
 }
 
@@ -46,9 +48,31 @@ use_relief <- function(data){
                kNearestExpRank=ReliefFNumNeighbour,
                ReliefIterations=NumIterations)
   #FS_ordered<- sort(FS, decreasing = T)
-  barplot(relief_att,main="Features",ylab="Eval",las=2,ylim =c(min(relief_att),max(relief_att)))
+  ra_ordered <- sort(relief_att, decreasing = T)
+  #barplot(relief_att,main="Features",ylab="Eval",las=2,ylim =c(min(relief_att),max(relief_att)))
+  #print(ra_ordered)
+  barplot(ra_ordered,main="Features",ylab="Eval",las=2,ylim=c(min(relief_att),max(relief_att)))
   return(relief_att)
 }
+
+
+#trasforma il vettore data in una matrice 'one hot'
+to_categorical<-function(data){
+  
+  num_row=nrow(data)
+  num_col=12
+  matrix_data<-matrix(0,ncol=12,nrow=num_row)
+  for(i in c(1:num_row)){
+    for(j in c(1:num_col)){
+      if(data[i,]==j){
+        matrix_data[i,j]=1
+      }
+    }
+  }
+  
+  return(matrix_data)
+}
+
 
 #misura il tempo in cui il segnale è crescente
 rising_time <- function(values) {
@@ -383,7 +407,6 @@ extract_P300 <- function(data) {
   return(as.numeric(average))
 }
 
-# NOTA BENE: da usare sui soli dati di train
 feature_corr_P300 <- function(df, p300){
   
   num_rows <- nrow(df)

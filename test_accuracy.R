@@ -10,7 +10,7 @@ test_accuracy <-function(model, test) {
   #print("Confusion Matrix:")
   #print(confusion_matrix)
   char_acc <- char_accuracy(prediction,y)
-  #print("Confusion Summary \n")
+  #print("Confusion Summary")
   #print(confusion_summary(confusion_matrix))
   return(char_acc)
 }
